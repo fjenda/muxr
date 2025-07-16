@@ -72,7 +72,7 @@ def run_demucs(file_path: Path, output_path: Path, model: str, mp3: bool, mp3_ra
         line = line.strip()
         if not line:
             continue
-        print(line)
+#         print(line)
         if "%" in line and "|" in line and "/" in line:
             try:
                 percent_str = line.split('%')[0].strip()
