@@ -10,6 +10,7 @@ import subprocess
 import zipfile
 import os
 import argparse
+import sys
 
 # for watching dead clients
 import threading
@@ -33,7 +34,7 @@ OUTPUT_ROOT.mkdir(exist_ok=True)
 
 def run_demucs(file_path: Path, output_path: Path, model: str, mp3: bool, mp3_rate: int, two_stems: str | None):
     cmd = [
-        "python", "-m", "demucs.separate",
+        sys.executable, "-m", "demucs.separate",
         "-n", model,
         "-o", str(output_path),
     ]
@@ -71,7 +72,7 @@ def run_demucs(file_path: Path, output_path: Path, model: str, mp3: bool, mp3_ra
         line = line.strip()
         if not line:
             continue
-        # print(line)
+        print(line)
         if "%" in line and "|" in line and "/" in line:
             try:
                 percent_str = line.split('%')[0].strip()
