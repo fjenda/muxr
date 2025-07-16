@@ -27,6 +27,7 @@
 		formData.append("model", "htdemucs");
 		formData.append("mp3", "false");
 		formData.append("mp3_bitrate", "320");
+		// formData.append("two_stems", "drums");
 
 		status = "Uploading your file...";
 
