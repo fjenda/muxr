@@ -11,6 +11,11 @@ import zipfile
 import os
 import argparse
 
+# for watching dead clients
+import threading
+import time
+from datetime import datetime, timezone
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -42,7 +47,25 @@ def run_demucs(file_path: Path, output_path: Path, model: str, mp3: bool, mp3_ra
     progress_file = output_path / "progress.json"
     progress_file.write_text(json.dumps({"type": "start", "percentage": 0}))
 
+    poll_file = output_path / "last_poll.txt"
+    poll_file.write_text(datetime.now(timezone.utc).isoformat())
+
     process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+
+    def poll_watcher(proc):
+        while proc.poll() is None:
+            try:
+                last_poll = datetime.fromisoformat(poll_file.read_text())
+                delta = (datetime.now(timezone.utc) - last_poll).total_seconds()
+                if delta > 15:
+                    proc.kill()
+                    print(f"[{file_path.name}] Poll timeout, killed process")
+                    return
+            except Exception:
+                pass
+            time.sleep(1)
+
+    threading.Thread(target=poll_watcher, args=(process,), daemon=True).start()
 
     for line in process.stderr:
         line = line.strip()
@@ -118,6 +141,9 @@ def get_result(session_id: str):
     status_file = output_path / "status.txt"
     zip_file = output_path / "result.zip"
     progress_file = output_path / "progress.json"
+    poll_file = output_path / "last_poll.txt"
+
+    poll_file.write_text(datetime.now(timezone.utc).isoformat())
 
     if not status_file.exists():
         progress = {}
