@@ -37,6 +37,13 @@
             <Card {icon} {title} selected={selected === title} onClick={() => handleCardClick(title)} />
         {/each}
     </div>
+    <div id="format-options" role="radiogroup" aria-label="Output format">
+        <button type="button" data-format="mp3" class="format-btn selected">MP3</button>
+        <button type="button" data-format="wav" class="format-btn">WAV</button>
+        <button type="button" data-format="flac" class="format-btn">FLAC</button>
+    </div>
+    <input type="hidden" name="format" id="format" value="mp3">
+
     <div class="button-container">
         <Button onClick={continueToNext} tabindex="0" disabled={!selected}>
             Continue
@@ -138,4 +145,30 @@
         justify-content: center;
         margin-top: 2rem;
     }
+
+    #format-options {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .format-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid #ccc;
+        background: #f8f8f8;
+        cursor: pointer;
+        border-radius: 4px;
+        font-weight: bold;
+        transition: all 0.2s ease;
+    }
+
+    .format-btn:hover {
+        background: #eaeaea;
+    }
+
+    .format-btn.selected {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
 </style>
