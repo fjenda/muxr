@@ -26,7 +26,6 @@
     let volumeInput: HTMLInputElement;
     let waveformContainer: HTMLDivElement;
     let waveformScrollContainer: HTMLDivElement;
-    let trackCount = 0;
 
     let playing = $state(false);
     let time = $state(0);
@@ -88,17 +87,17 @@
     // TODO: This currently just replaces the one and only track that's in the list.
     // I will probably keep it like that and allow user to configure what he wants it to split into.
     // TODO: @bug This also resets the volume
-    const loadUrl = async (url: string) => {
-        if (!player) return;
-        const track = {
-            id: trackCount,
-            draggable: false,
-            startPosition: 0,
-            url: url,
-        };
-
-        player.addTrack(track);
-    };
+    // const loadUrl = async (url: string) => {
+    //     if (!player) return;
+    //     const track = {
+    //         id: trackCount,
+    //         draggable: false,
+    //         startPosition: 0,
+    //         url: url,
+    //     };
+    //
+    //     player.addTrack(track);
+    // };
 
     const formatTime = (seconds: number): string => {
         const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -130,30 +129,27 @@
     const initMultitrack = (time: number = 0) => {
         if (player) player.destroy();
 
-        let tracks = [];
-        trackUrls.tracks.forEach((t, index) => {
-            tracks.push({
+        trackStates = [
+            ...trackUrls.tracks.map((track, index) => ({
                 id: index,
-                draggable: false,
-                startPosition: 0,
-                url: t.url,
-                options: {
-                    height: barHeight,
-                },
-            });
-
-            trackStates.push({
-                id: index,
-                title: t.title,
+                title: track.title,
                 solo: false,
                 mute: false,
-            });
-
-        });
-        trackCount = tracks.length;
+            }))
+        ];
 
         player = Multitrack.create(
-            tracks,
+            [
+                ...trackUrls.tracks.map((track, index) => ({
+                    id: index,
+                    draggable: false,
+                    startPosition: 0,
+                    url: track.url,
+                    options: {
+                        height: barHeight,
+                    },
+                }))
+            ],
             {
                 container: waveformContainer,
                 cursorColor: window.matchMedia('(prefers-color-scheme: dark)').matches ? "var(--text-color-dark)" : "var(--text-color-light)"
