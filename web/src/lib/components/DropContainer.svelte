@@ -1,6 +1,8 @@
 <script lang="ts">
     import { onDrop, onFileSelect } from "$utils/loadFile";
     import { goto } from "$app/navigation";
+    import { faFileImport } from "@fortawesome/free-solid-svg-icons";
+    import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
 
     const onClick = (e: Event) => {
         onFileSelect(e);
@@ -22,7 +24,9 @@
 </script>
 
 <div class="drop-container" ondrop={handleDrop} ondragover={handleDragOver} role="region">
+    <FontAwesomeIcon icon={faFileImport} size="4x" />
     <h2>Drop your track here.</h2>
+    <p>Or click to select a file</p>
     <input
             id="audio-file"
             type="file"
@@ -38,7 +42,10 @@
         border-radius: 0.5rem;
         padding: 1rem;
         width: 100%;
+        max-width: 600px;
         display: flex;
+        flex-direction: column;
+        gap: 1rem;
         flex-grow: 1;
         justify-content: center;
         align-items: center;

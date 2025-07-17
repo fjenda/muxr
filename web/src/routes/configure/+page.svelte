@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import { faDrum, faGuitar, faMicrophone } from "@fortawesome/free-solid-svg-icons";
+    import { faDrum, faMicrophone } from "@fortawesome/free-solid-svg-icons";
     import { Button, Card } from "$components";
     import { configurationState } from "$stores/configuration.svelte";
     import { separate } from "$utils/separate";
