@@ -34,6 +34,7 @@
 		"fflate": "^0.8.2",
 		"resize-observer-polyfill": "^1.5.1",
 		"simplebar": "^6.3.2",
-		"svelte-fa": "^4.0.4"
+		"svelte-fa": "^4.0.4",
+		"wavesurfer-multitrack": "file:3rdparty/wavesurfer-multitrack"
 	}
 }

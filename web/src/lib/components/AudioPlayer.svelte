@@ -10,17 +10,14 @@
     import { createDebounce } from "$utils/debounce";
     import type { TrackState } from "$lib/types/TrackState";
     import { trackUrls } from "$stores/trackUrls.svelte.js";
+    import Multitrack from "../../../3rdparty/wavesurfer-multitrack/src/multitrack";
     window.ResizeObserver = ResizeObserver;
 
     interface AudioPlayerProps {
-        fileState: {
-            name: string | null;
-            url: string | null;
-        };
         barHeight?: number;
     }
 
-    let { fileState, barHeight = 128 }: AudioPlayerProps = $props();
+    let { barHeight = 128 }: AudioPlayerProps = $props();
 
     let player: Multitrack | null = null;
     let volumeInput: HTMLInputElement;
@@ -32,19 +29,13 @@
     let trackStates = $state<TrackState[]>([]);
     let masterVolume = $state(1);
 
-    // const loadUrl = async (url: string) => {
-    //     if (!player) return;
-    //     await player.addTrack();
-    // };
-
-    let cursorX: Number = $state(0);
+    let cursorX: number = $state(0);
     let showCursorPlayhead: boolean = $state(false);
 
     function updateCursorPlayhead(e: MouseEvent) {
         const rect = waveformContainer.getBoundingClientRect();
         cursorX = e.clientX - rect.left;
     }
-
 
     const backward = () => {
         if (!player) return;
@@ -60,7 +51,10 @@
 
     const togglePlay = () => {
         if (!player) return;
-        player.isPlaying() ? player.pause() : player.play();
+        if (player.getCurrentTime() >= player.getMaxDuration()) {
+            player.setTime(0);
+        }
+        playing ? player.pause() : player.play();
         playing = player.isPlaying();
     };
 
@@ -81,16 +75,29 @@
         trackStates.forEach((state, index) => {
             if (state.mute || (anySolo && !state.solo)) {
                 player.setTrackVolume(index, 0);
+                trackStates[index].volume = 0;
             } else {
-                player.setTrackVolume(index, masterVolume);
+                player.setTrackVolume(index, trackStates[index].volume * masterVolume);
             }
         });
     };
 
-    const setVolume = () => {
+    const setMasterVolume = () => {
         if (!player) return;
         masterVolume = volumeInput.valueAsNumber;
         updateTrackVolumes();
+    }
+
+    const setTrackVolume = (event: Event, trackId: number) => {
+        if (!player) return;
+        const anySolo = trackStates.some(ts => ts.solo);
+        if (trackStates[trackId].mute || (anySolo && !trackStates[trackId].solo)) {
+            player.setTrackVolume(trackId, 0);
+            trackStates[trackId].volume = 0;
+        } else {
+            player.setTrackVolume(trackId, (event.target as HTMLInputElement).valueAsNumber * masterVolume);
+            trackStates[trackId].volume = (event.target as HTMLInputElement).valueAsNumber;
+        }
     }
 
     // TODO: This currently just replaces the one and only track that's in the list.
@@ -118,23 +125,26 @@
         if (!player) return;
 
         switch (e.key) {
-            case ' ': togglePlay(); break;
+            case ' ': {
+                e.preventDefault();
+                togglePlay();
+                break;
+            }
             case 'ArrowLeft': backward(); break;
             case 'ArrowRight': forward(); break;
             case 'ArrowUp':
                 volumeInput.valueAsNumber = Math.min(1, volumeInput.valueAsNumber + 0.05);
-                setVolume();
+                setMasterVolume();
                 break;
             case 'ArrowDown':
                 volumeInput.valueAsNumber = Math.max(0, volumeInput.valueAsNumber - 0.05);
-                setVolume();
+                setMasterVolume();
                 break;
             default:
                 return; // Ignore other keys
         }
     }
 
-    // TODO: replace tracks with stems from backend.
     const initMultitrack = (time: number = 0) => {
         if (player) player.destroy();
 
@@ -144,6 +154,7 @@
                 title: track.title,
                 solo: false,
                 mute: false,
+                volume: 1,
             }))
         ];
 
@@ -216,32 +227,40 @@
         <div class="waveform-grid">
             <div class="track-controls-panel">
                 {#each trackStates as state, i}
-                    <div class="title">
-                        <p>{state.title}</p>
-                    </div>
                     <div class="track-control" style="height: {barHeight}px;">
-                        <Button
-                                small
-                                class="solo-btn"
-                                data-active={state.solo}
-                                onClick={() => toggleSolo(i)}
-                                aria-label={state.solo ? "Un-solo track" : "Solo track"}
-                        >
-                            S
-                        </Button>
-                        <Button
-                                small
-                                class="mute-btn"
-                                data-active={state.mute}
-                                onClick={() => toggleMute(i)}
-                                aria-label={state.mute ? "Unmute track" : "Mute track"}
-                        >
-                            {#if state.mute}
-                                <FontAwesomeIcon icon={faVolumeMute} />
-                            {:else}
-                                <FontAwesomeIcon icon={faVolumeUp} />
-                            {/if}
-                        </Button>
+                        <div class="info-panel">
+                            <p>{state.title}</p>
+                            <div class="track-buttons">
+                                <Button
+                                        small
+                                        class="solo-btn"
+                                        data-active={state.solo}
+                                        onClick={() => toggleSolo(i)}
+                                        aria-label={state.solo ? "Un-solo track" : "Solo track"}
+                                >
+                                    S
+                                </Button>
+                                <Button
+                                        small
+                                        class="mute-btn"
+                                        data-active={state.mute}
+                                        onClick={() => toggleMute(i)}
+                                        aria-label={state.mute ? "Unmute track" : "Mute track"}
+                                >
+                                    {#if state.mute}
+                                        <FontAwesomeIcon icon={faVolumeMute} />
+                                    {:else}
+                                        <FontAwesomeIcon icon={faVolumeUp} />
+                                    {/if}
+                                </Button>
+                            </div>
+                        </div>
+                        <input type="range" min="0" max="1" step="0.01"
+                               value={state.volume}
+                                oninput={(event) => {
+                                     if (!player) return;
+                                     setTrackVolume(event, i);
+                                }} />
                     </div>
                 {/each}
             </div>
@@ -258,7 +277,7 @@
     <div class="timeline-controls">
         <div class="range-wrapper">
             <label for="volume">Volume</label>
-            <input id="volume" type="range" min="0" max="1" value="1" step="0.01" bind:this={volumeInput} oninput={setVolume} />
+            <input id="volume" type="range" min="0" max="1" value="1" step="0.01" bind:this={volumeInput} oninput={setMasterVolume} />
             <p>{formatTime(time)}</p>
         </div>
         <div class="button-group">
@@ -395,16 +414,29 @@
 
     .track-control {
         display: flex;
-        /*flex-direction: column;*/
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: 1rem;
         padding: 0.5rem;
         border-bottom: 1px solid var(--border-color-light);
     }
 
     .track-control:last-child {
         border-bottom: none;
+    }
+
+    .info-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    .track-buttons {
+        display: flex;
+        gap: 0.5rem;
     }
 
     :global(.solo-btn), :global(.mute-btn) {
@@ -458,6 +490,12 @@
 
     .cursor-playhead.visible {
         opacity: 1;
+    }
+
+    .info-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
     @media screen and (max-width: 650px) {

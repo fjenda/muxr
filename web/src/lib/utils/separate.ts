@@ -96,6 +96,7 @@ async function decompressZipBlob(blob: Blob) {
 
         const extracted = unzipSync(uint8Array); // returns { [filename: string]: Uint8Array }
 
+        trackUrls.clear(); // clear previous URLs
         for (const [filename, data] of Object.entries(extracted)) {
             const type = getMimeType(filename);
             const fileBlob = new Blob([data], { type });

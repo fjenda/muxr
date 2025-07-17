@@ -3,4 +3,5 @@ export type TrackState = {
     title: string;
     solo: boolean;
     mute: boolean;
+    volume: number;
 };
