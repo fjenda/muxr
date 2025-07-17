@@ -16,8 +16,8 @@ import WebAudioPlayer from './webaudio.js'
 export type TrackId = string | number
 
 type SingleTrackOptions = Omit<
-  WaveSurferOptions,
-  'container' | 'minPxPerSec' | 'duration' | 'cursorColor' | 'cursorWidth' | 'interact' | 'hideScrollbar'
+    WaveSurferOptions,
+    'container' | 'minPxPerSec' | 'duration' | 'cursorColor' | 'cursorWidth' | 'interact' | 'hideScrollbar'
 >
 
 export type TrackOptions = {
@@ -125,9 +125,9 @@ class MultiTrack extends EventEmitter<MultitrackEvents> {
       this.rendering.containers.forEach((container, index) => {
         if (tracks[index]?.draggable) {
           const unsubscribe = initDragging(
-            container,
-            (delta: number) => this.onDrag(index, delta),
-            options.rightButtonDrag,
+              container,
+              (delta: number) => this.onDrag(index, delta),
+              options.rightButtonDrag,
           )
           this.wavesurfers[index].once('destroy', unsubscribe)
         }
@@ -162,7 +162,7 @@ class MultiTrack extends EventEmitter<MultitrackEvents> {
     const isIOS = /iPhone|iPad/.test(navigator.userAgent)
     const isPlaceholderTrack = track.id === PLACEHOLDER_TRACK.id
     const audio =
-      track.options?.media || (isIOS || isPlaceholderTrack ? new WebAudioPlayer(this.audioContext) : new Audio())
+        track.options?.media || (isIOS || isPlaceholderTrack ? new WebAudioPlayer(this.audioContext) : new Audio())
 
     audio.crossOrigin = 'anonymous'
 
@@ -174,7 +174,7 @@ class MultiTrack extends EventEmitter<MultitrackEvents> {
 
     return new Promise<typeof audio>((resolve) => {
       if (!audio.src) return resolve(audio)
-      ;(audio as HTMLAudioElement).addEventListener('loadedmetadata', () => resolve(audio), { once: true })
+          ;(audio as HTMLAudioElement).addEventListener('loadedmetadata', () => resolve(audio), { once: true })
     })
   }
 
@@ -193,10 +193,10 @@ class MultiTrack extends EventEmitter<MultitrackEvents> {
       minPxPerSec: 0,
       media: this.audios[index] as HTMLMediaElement,
       peaks:
-        track.peaks ||
-        (this.audios[index] instanceof WebAudioPlayer
-          ? (this.audios[index] as WebAudioPlayer).getChannelData()
-          : undefined),
+          track.peaks ||
+          (this.audios[index] instanceof WebAudioPlayer
+              ? (this.audios[index] as WebAudioPlayer).getChannelData()
+              : undefined),
       duration: this.durations[index],
       cursorColor: 'transparent',
       cursorWidth: 0,
@@ -206,10 +206,10 @@ class MultiTrack extends EventEmitter<MultitrackEvents> {
 
     if (track.id === PLACEHOLDER_TRACK.id) {
       ws.registerPlugin(
-        TimelinePlugin.create({
-          container: this.rendering.containers[0].parentElement,
-          ...this.options.timelineOptions,
-        } as TimelinePluginOptions),
+          TimelinePlugin.create({
+            container: this.rendering.containers[0].parentElement,
+            ...this.options.timelineOptions,
+          } as TimelinePluginOptions),
       )
     }
 
@@ -218,87 +218,87 @@ class MultiTrack extends EventEmitter<MultitrackEvents> {
     ws.registerPlugin(wsRegions)
 
     this.subscriptions.push(
-      ws.once('decode', () => {
-        // Start and end cues
-        if (track.startCue != null || track.endCue != null) {
-          const { startCue = 0, endCue = this.durations[index] } = track
-          const startCueRegion = wsRegions.addRegion({
-            start: 0,
-            end: startCue,
-            color: 'rgba(0, 0, 0, 0.7)',
-            drag: false,
-          })
-          const endCueRegion = wsRegions.addRegion({
-            start: endCue,
-            end: this.durations[index],
-            color: 'rgba(0, 0, 0, 0.7)',
-            drag: false,
-          })
+        ws.once('decode', () => {
+          // Start and end cues
+          if (track.startCue != null || track.endCue != null) {
+            const { startCue = 0, endCue = this.durations[index] } = track
+            const startCueRegion = wsRegions.addRegion({
+              start: 0,
+              end: startCue,
+              color: 'rgba(0, 0, 0, 0.7)',
+              drag: false,
+            })
+            const endCueRegion = wsRegions.addRegion({
+              start: endCue,
+              end: this.durations[index],
+              color: 'rgba(0, 0, 0, 0.7)',
+              drag: false,
+            })
 
-          // Allow resizing only from one side
-          startCueRegion.element.firstElementChild?.remove()
-          endCueRegion.element.lastChild?.remove()
+            // Allow resizing only from one side
+            startCueRegion.element.firstElementChild?.remove()
+            endCueRegion.element.lastChild?.remove()
 
-          // Update the start and end cues on resize
-          this.subscriptions.push(
-            startCueRegion.on('update-end', () => {
-              track.startCue = startCueRegion.end
-              this.emit('start-cue-change', { id: track.id, startCue: track.startCue as number })
-            }),
+            // Update the start and end cues on resize
+            this.subscriptions.push(
+                startCueRegion.on('update-end', () => {
+                  track.startCue = startCueRegion.end
+                  this.emit('start-cue-change', { id: track.id, startCue: track.startCue as number })
+                }),
 
-            endCueRegion.on('update-end', () => {
-              track.endCue = endCueRegion.start
-              this.emit('end-cue-change', { id: track.id, endCue: track.endCue as number })
-            }),
-          )
-        }
-
-        // Intro
-        if (track.intro) {
-          const introRegion = wsRegions.addRegion({
-            start: 0,
-            end: track.intro.endTime,
-            content: track.intro.label,
-            color: this.options.trackBackground,
-            drag: false,
-          })
-          introRegion.element.querySelector('[part*="region-handle-left"]')?.remove()
-          ;(introRegion.element.parentElement as HTMLElement).style.mixBlendMode = 'plus-lighter'
-          if (track.intro.color) {
-            const rightHandle = introRegion.element.querySelector('[part*="region-handle-right"]') as HTMLElement
-            if (rightHandle) {
-              rightHandle.style.borderColor = track.intro.color
-            }
+                endCueRegion.on('update-end', () => {
+                  track.endCue = endCueRegion.start
+                  this.emit('end-cue-change', { id: track.id, endCue: track.endCue as number })
+                }),
+            )
           }
 
-          this.subscriptions.push(
-            introRegion.on('update-end', () => {
-              this.emit('intro-end-change', { id: track.id, endTime: introRegion.end })
-            }),
-          )
-        }
-
-        // Render markers
-        if (track.markers) {
-          track.markers.forEach((marker) => {
-            wsRegions.addRegion({
-              start: marker.time,
-              content: marker.label,
-              color: marker.color,
-              resize: false,
+          // Intro
+          if (track.intro) {
+            const introRegion = wsRegions.addRegion({
+              start: 0,
+              end: track.intro.endTime,
+              content: track.intro.label,
+              color: this.options.trackBackground,
+              drag: false,
             })
-          })
-        }
-      }),
+            introRegion.element.querySelector('[part*="region-handle-left"]')?.remove()
+            ;(introRegion.element.parentElement as HTMLElement).style.mixBlendMode = 'plus-lighter'
+            if (track.intro.color) {
+              const rightHandle = introRegion.element.querySelector('[part*="region-handle-right"]') as HTMLElement
+              if (rightHandle) {
+                rightHandle.style.borderColor = track.intro.color
+              }
+            }
+
+            this.subscriptions.push(
+                introRegion.on('update-end', () => {
+                  this.emit('intro-end-change', { id: track.id, endTime: introRegion.end })
+                }),
+            )
+          }
+
+          // Render markers
+          if (track.markers) {
+            track.markers.forEach((marker) => {
+              wsRegions.addRegion({
+                start: marker.time,
+                content: marker.label,
+                color: marker.color,
+                resize: false,
+              })
+            })
+          }
+        }),
     )
 
     if (track.envelope) {
       // Envelope
       const envelope = ws.registerPlugin(
-        EnvelopePlugin.create({
-          ...this.options.envelopeOptions,
-          volume: track.volume,
-        }),
+          EnvelopePlugin.create({
+            ...this.options.envelopeOptions,
+            volume: track.volume,
+          }),
       )
 
       if (Array.isArray(track.envelope)) {
@@ -336,41 +336,41 @@ class MultiTrack extends EventEmitter<MultitrackEvents> {
       let prevFadeOutStart = track.fadeOutStart
 
       this.subscriptions.push(
-        envelope.on('volume-change', (volume) => {
-          this.emit('volume-change', { id: track.id, volume })
-        }),
+          envelope.on('volume-change', (volume) => {
+            this.emit('volume-change', { id: track.id, volume })
+          }),
 
-        envelope.on('points-change', (points) => {
-          const fadeIn = points.find((point) => point.id === 'fadeInEnd')
-          if (fadeIn && fadeIn.time !== prevFadeInEnd) {
-            this.emit('fade-in-change', { id: track.id, fadeInEnd: fadeIn.time })
-            prevFadeInEnd = fadeIn.time
-          }
+          envelope.on('points-change', (points) => {
+            const fadeIn = points.find((point) => point.id === 'fadeInEnd')
+            if (fadeIn && fadeIn.time !== prevFadeInEnd) {
+              this.emit('fade-in-change', { id: track.id, fadeInEnd: fadeIn.time })
+              prevFadeInEnd = fadeIn.time
+            }
 
-          const fadeOut = points.find((point) => point.id === 'fadeOutStart')
-          if (fadeOut && fadeOut.time !== prevFadeOutStart) {
-            this.emit('fade-out-change', { id: track.id, fadeOutStart: fadeOut.time })
-            prevFadeOutStart = fadeOut.time
-          }
+            const fadeOut = points.find((point) => point.id === 'fadeOutStart')
+            if (fadeOut && fadeOut.time !== prevFadeOutStart) {
+              this.emit('fade-out-change', { id: track.id, fadeOutStart: fadeOut.time })
+              prevFadeOutStart = fadeOut.time
+            }
 
-          this.emit('envelope-points-change', { id: track.id, points })
-        }),
+            this.emit('envelope-points-change', { id: track.id, points })
+          }),
 
-        this.on('start-cue-change', ({ id, startCue }) => {
-          if (id === track.id) {
-            setPointTimeById('startCue', startCue)
-          }
-        }),
+          this.on('start-cue-change', ({ id, startCue }) => {
+            if (id === track.id) {
+              setPointTimeById('startCue', startCue)
+            }
+          }),
 
-        this.on('end-cue-change', ({ id, endCue }) => {
-          if (id === track.id) {
-            setPointTimeById('endCue', endCue)
-          }
-        }),
+          this.on('end-cue-change', ({ id, endCue }) => {
+            if (id === track.id) {
+              setPointTimeById('endCue', endCue)
+            }
+          }),
 
-        ws.on('decode', () => {
-          envelope.setVolume(track.volume ?? 1)
-        }),
+          ws.on('decode', () => {
+            envelope.setVolume(track.volume ?? 1)
+          }),
       )
     }
 
@@ -441,9 +441,9 @@ class MultiTrack extends EventEmitter<MultitrackEvents> {
 
     this.tracks.forEach((track, index) => {
       if (
-        (track.url || track.options?.media) &&
-        this.currentTime >= track.startPosition &&
-        this.currentTime < track.startPosition + this.durations[index]
+          (track.url || track.options?.media) &&
+          this.currentTime >= track.startPosition &&
+          this.currentTime < track.startPosition + this.durations[index]
       ) {
         indexes.push(index)
       }
@@ -493,34 +493,16 @@ class MultiTrack extends EventEmitter<MultitrackEvents> {
     this.audios.forEach((audio) => audio.pause())
   }
 
-  /**
-   * Gets the current playback rate of the audio tracks.
-   * @returns The playback rate of the first audio track, or 1 if no tracks exist.
-   */
-  public getAudioRate(): number {
-    return this.audios.length > 0 ? this.audios[0].playbackRate : 1
-  }
-
-  /**
-   * Sets the playback rate for all audio tracks to maintain synchronization.
-   * @param rate The playback rate (between 0.25 and 5.0).
-   * @throws {Error} If the rate is outside the valid range.
-   */
-  public setAudioRate(rate: number) {
-    if (rate < 0.25 || rate > 5.0) {
-      throw new Error('Playback rate must be between 0.25 and 5.0')
-    }
-    this.audios.forEach((audio) => {
-      audio.playbackRate = rate
-    })
-  }
-
   public isPlaying() {
     return this.audios.some((audio) => !audio.paused)
   }
 
   public getCurrentTime() {
     return this.currentTime
+  }
+
+  public getMaxDuration() {
+    return this.maxDuration;
   }
 
   /** Position percentage from 0 to 1 */
@@ -561,9 +543,9 @@ class MultiTrack extends EventEmitter<MultitrackEvents> {
         this.wavesurfers[index] = this.initWavesurfer(track, index)
 
         const unsubscribe = initDragging(
-          container,
-          (delta: number) => this.onDrag(index, delta),
-          this.options.rightButtonDrag,
+            container,
+            (delta: number) => this.onDrag(index, delta),
+            this.options.rightButtonDrag,
         )
         this.wavesurfers[index].once('destroy', unsubscribe)
 
@@ -594,10 +576,6 @@ class MultiTrack extends EventEmitter<MultitrackEvents> {
 
   public setTrackVolume(index: number, volume: number) {
     ;(this.envelopes[index] || this.wavesurfers[index])?.setVolume(volume)
-  }
-
-  public getMaxDuration() {
-    return this.maxDuration;
   }
 
   public setTrackStartPosition(index: number, value: number) {
@@ -670,8 +648,8 @@ function initRendering(tracks: MultitrackTracks, options: MultitrackOptions) {
     if (!(track.url || track.options?.media)) {
       const dropArea = document.createElement('div')
       dropArea.setAttribute(
-        'style',
-        `position: absolute; z-index: 10; left: 10px; top: 10px; right: 10px; bottom: 10px; border: 2px dashed ${options.trackBorderColor};`,
+          'style',
+          `position: absolute; z-index: 10; left: 10px; top: 10px; right: 10px; bottom: 10px; border: 2px dashed ${options.trackBorderColor};`,
       )
       dropArea.addEventListener('dragover', (e) => {
         e.preventDefault()
@@ -768,19 +746,19 @@ function initDragging(container: HTMLElement, onDrag: (delta: number) => void, r
   let overallWidth = 0
 
   const unsubscribe = makeDraggable(
-    container,
-    (dx: number) => {
-      onDrag(dx / overallWidth)
-    },
-    () => {
-      container.style.cursor = 'grabbing'
-      overallWidth = container.parentElement?.offsetWidth ?? 0
-    },
-    () => {
-      container.style.cursor = 'grab'
-    },
-    5,
-    rightButtonDrag ? 2 : 0,
+      container,
+      (dx: number) => {
+        onDrag(dx / overallWidth)
+      },
+      () => {
+        container.style.cursor = 'grabbing'
+        overallWidth = container.parentElement?.offsetWidth ?? 0
+      },
+      () => {
+        container.style.cursor = 'grab'
+      },
+      5,
+      rightButtonDrag ? 2 : 0,
   )
 
   const preventDefault = (e: Event) => e.preventDefault()

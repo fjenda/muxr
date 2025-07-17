@@ -63,24 +63,24 @@ class WebAudioPlayer {
     }
 
     fetch(value)
-      .then((response) => response.arrayBuffer())
-      .then((arrayBuffer) => {
-        if (this.src !== value) return null
-        return this.audioContext.decodeAudioData(arrayBuffer)
-      })
-      .then((audioBuffer) => {
-        if (this.src !== value || !audioBuffer) return null
+        .then((response) => response.arrayBuffer())
+        .then((arrayBuffer) => {
+          if (this.src !== value) return null
+          return this.audioContext.decodeAudioData(arrayBuffer)
+        })
+        .then((audioBuffer) => {
+          if (this.src !== value || !audioBuffer) return null
 
-        this.buffer = audioBuffer
-        this._duration = audioBuffer.duration
+          this.buffer = audioBuffer
+          this._duration = audioBuffer.duration
 
-        this.emitEvent('loadedmetadata')
-        this.emitEvent('canplay')
+          this.emitEvent('loadedmetadata')
+          this.emitEvent('canplay')
 
-        if (this.autoplay) {
-          this.play()
-        }
-      })
+          if (this.autoplay) {
+            this.play()
+          }
+        })
   }
 
   getChannelData() {
@@ -99,7 +99,7 @@ class WebAudioPlayer {
 
     const offset = this.playedDuration > 0 ? this.playedDuration : 0
     const start =
-      this.playedDuration > 0 ? this.audioContext.currentTime : this.audioContext.currentTime - this.playedDuration
+        this.playedDuration > 0 ? this.audioContext.currentTime : this.audioContext.currentTime - this.playedDuration
 
     this.bufferNode.start(start, offset)
     this.playStartTime = this.audioContext.currentTime

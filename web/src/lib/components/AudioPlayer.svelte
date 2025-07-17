@@ -15,14 +15,16 @@
 
     interface AudioPlayerProps {
         barHeight?: number;
+        timelineHeight?: number;
     }
 
-    let { barHeight = 128 }: AudioPlayerProps = $props();
+    let { barHeight = 128, timelineHeight = 30 }: AudioPlayerProps = $props();
 
     let player: Multitrack | null = null;
     let volumeInput: HTMLInputElement;
     let waveformContainer: HTMLDivElement;
     let waveformScrollContainer: HTMLDivElement;
+    let timelineContainer: HTMLDivElement;
 
     let playing = $state(false);
     let time = $state(0);
@@ -171,12 +173,18 @@
             ],
             {
                 container: waveformContainer,
-                cursorColor: window.matchMedia('(prefers-color-scheme: dark)').matches ? "var(--text-color-dark)" : "var(--text-color-light)"
+                cursorColor: window.matchMedia('(prefers-color-scheme: dark)').matches ? "var(--text-color-dark)" : "var(--text-color-light)",
+                timelineOptions: {
+                    container: timelineContainer,
+                    height: timelineHeight,
+                    timeInterval: 1,
+                    primaryLabelInterval: 5,
+                    style: {
+                        color: "#fff",
+                    }
+                }
             }
         );
-
-
-        console.log(trackUrls.tracks);
 
         player.once('canplay', () => {
             player.setTime(time);
@@ -224,7 +232,7 @@
 <div class="audio-player">
     <div class="waveform-scroll-wrapper" bind:this={waveformScrollContainer} data-simplebar>
         <div class="waveform-grid">
-            <div class="track-controls-panel">
+            <div class="track-controls-panel" style="margin-top: {timelineHeight}px">
                 {#each trackStates as state, i}
                     <div class="track-control" style="height: {barHeight}px;">
                         <div class="info-panel">
@@ -256,7 +264,7 @@
                         </div>
                         <input type="range" min="0" max="1" step="0.01"
                                value={state.volume}
-                                oninput={(event) => {
+                               oninput={(event) => {
                                      if (!player) return;
                                      setTrackVolume(event, i);
                                 }} />
@@ -264,10 +272,12 @@
                 {/each}
             </div>
             <div class="waveform-container-wrapper">
-                <div id="waveform" class="waveform-container" bind:this={waveformContainer}
+                <div id="waveform" class="waveform-container" role="region"
+                     bind:this={waveformContainer}
                      onmousemove={updateCursorPlayhead}
                      onmouseenter={() => showCursorPlayhead = true}
                      onmouseleave={() => showCursorPlayhead = false}>
+                    <div class="timeline-container" bind:this={timelineContainer}></div>
                     <div class="cursor-playhead" style="left: {cursorX}px" class:visible={showCursorPlayhead}></div>
                 </div>
             </div>
