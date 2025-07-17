@@ -100,7 +100,7 @@ async function decompressZipBlob(blob: Blob) {
             const type = getMimeType(filename);
             const fileBlob = new Blob([data], { type });
             const url = URL.createObjectURL(fileBlob);
-            trackUrls.addUrl(url);
+            trackUrls.addUrl({ title: filename, url: url });
         }
 
         processingState.status = "Decompression and processing complete";

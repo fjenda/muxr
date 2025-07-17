@@ -1,17 +1,22 @@
+export interface Track {
+    title: string,
+    url: string,
+}
+
 export const trackUrls = $state({
-    urls: [] as string[],
-    addUrl: (url: string) => {
-        if (!trackUrls.urls.includes(url)) {
-            trackUrls.urls.push(url);
+    tracks: [] as Track[],
+    addUrl: (track: Track) => {
+        if (!trackUrls.tracks.includes(track)) {
+            trackUrls.tracks.push(track);
         }
     },
-    removeUrl: (url: string) => {
-        const index = trackUrls.urls.indexOf(url);
+    removeUrl: (track: Track) => {
+        const index = trackUrls.tracks.indexOf(track);
         if (index !== -1) {
-            trackUrls.urls.splice(index, 1);
+            trackUrls.tracks.splice(index, 1);
         }
     },
     clear: () => {
-        trackUrls.urls = [];
+        trackUrls.tracks = [];
     },
 });

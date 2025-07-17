@@ -1,0 +1,7 @@
+- [ ] Title/Welcome Screen
+- [ ] Extract from YouTube link
+- [ ] Colorize the waveform links
+- [ ] Volume for every track
+- [ ] Option to download individual stems
+- [ ] Option to download all the stems
+- [ ] Option to change the file format (mp3/fac/wav)

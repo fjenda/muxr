@@ -130,17 +130,27 @@
     const initMultitrack = (time: number = 0) => {
         if (player) player.destroy();
 
-        const tracks = [
-            ...trackUrls.urls.map((url, index) => ({
+        let tracks = [];
+        trackUrls.tracks.forEach((t, index) => {
+            tracks.push({
                 id: index,
                 draggable: false,
                 startPosition: 0,
-                url: url,
+                url: t.url,
                 options: {
                     height: barHeight,
-                }
-            }))
-        ];
+                },
+            });
+
+            trackStates.push({
+                id: index,
+                title: t.title,
+                solo: false,
+                mute: false,
+            });
+
+        });
+        trackCount = tracks.length;
 
         player = Multitrack.create(
             tracks,
@@ -150,8 +160,8 @@
             }
         );
 
-        trackStates = tracks.map(t => ({ id: t.id, solo: false, mute: false }));
-        trackCount = tracks.length;
+
+        console.log(trackUrls.tracks);
 
         player.once('canplay', () => {
             player.setTime(time);
@@ -201,6 +211,9 @@
         <div class="waveform-grid">
             <div class="track-controls-panel">
                 {#each trackStates as state, i}
+                    <div class="title">
+                        <p>{state.title}</p>
+                    </div>
                     <div class="track-control" style="height: {barHeight}px;">
                         <Button
                                 small
@@ -372,7 +385,7 @@
 
     .track-control {
         display: flex;
-        flex-direction: column;
+        /*flex-direction: column;*/
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
