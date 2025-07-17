@@ -7,7 +7,7 @@
 - [ ] Option to download individual stems
 - [ ] Option to download all the stems
 - [ ] Option to change the file format (mp3/fac/wav)
-- [ ] Top timeline with time markers to see where we are in the song
+- [ ] move timeline to top
 - [ ] Detect BPM and display it
 - [ ] Zoom ?
 

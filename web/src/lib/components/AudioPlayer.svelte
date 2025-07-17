@@ -429,7 +429,6 @@
     /* The actual waveform container */
     .waveform-container {
         min-width: 100%;
-        min-height: 100%;
         display: inline-block;
     }
 
