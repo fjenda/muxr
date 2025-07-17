@@ -31,7 +31,7 @@ export const separate = async () => {
 
     processingState.status = "Uploading your file...";
     try {
-        const res = await fetch("http://localhost:8000/separate", {
+        const res = await fetch("/api/separate", {
             method: "POST",
             body: formData
         });
@@ -55,7 +55,7 @@ export const pollResult = async () => {
 
     const interval = setInterval(async () => {
         LoadingActions.show(processingState.status);
-        const res = await fetch(`http://localhost:8000/result/${processingState.sessionId}`);
+        const res = await fetch(`api/result/${processingState.sessionId}`);
         if (res.status === 202) {
             try {
                 const body = await res.json();

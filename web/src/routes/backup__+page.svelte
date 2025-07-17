@@ -32,7 +32,7 @@
 		status = "Uploading your file...";
 
 		try {
-			const res = await fetch("http://localhost:8000/separate", {
+			const res = await fetch("api/separate", {
 				method: "POST",
 				body: formData
 			});
@@ -52,7 +52,7 @@
 		let percentage = 0;
 
 		const interval = setInterval(async () => {
-			const res = await fetch(`http://localhost:8000/result/${sessionId}`);
+			const res = await fetch(`api/result/${sessionId}`);
 			if (res.status === 202) {
 				try {
 					const body = await res.json();

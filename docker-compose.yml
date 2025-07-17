@@ -3,9 +3,6 @@ services:
   api:
     build:
       context: ./api
-    ports:
-      - "8000:8000"
-
     restart: unless-stopped
 
   web:
@@ -13,5 +10,4 @@ services:
       context: ./web
     ports:
       - "5173:5173"
-
     restart: unless-stopped
