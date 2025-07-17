@@ -10,7 +10,7 @@
     import { createDebounce } from "$utils/debounce";
     import type { TrackState } from "$lib/types/TrackState";
     import { trackUrls } from "$stores/trackUrls.svelte.js";
-    import Multitrack from "../../../3rdparty/wavesurfer-multitrack/src/multitrack";
+    import Multitrack from "@multitrack/multitrack";
     window.ResizeObserver = ResizeObserver;
 
     interface AudioPlayerProps {
@@ -75,7 +75,6 @@
         trackStates.forEach((state, index) => {
             if (state.mute || (anySolo && !state.solo)) {
                 player.setTrackVolume(index, 0);
-                trackStates[index].volume = 0;
             } else {
                 player.setTrackVolume(index, trackStates[index].volume * masterVolume);
             }

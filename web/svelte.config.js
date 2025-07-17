@@ -15,6 +15,7 @@ const config = {
 			$providers: "./src/lib/providers",
 			$stores: "./src/lib/stores",
 			$utils: "./src/lib/utils",
+			'@multitrack': path.resolve("./3rdparty/wavesurfer-multitrack/src"),
 		},
 	},
 };
