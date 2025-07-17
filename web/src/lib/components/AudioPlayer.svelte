@@ -11,14 +11,18 @@
     import type { TrackState } from "$lib/types/TrackState";
     import { trackUrls } from "$stores/trackUrls.svelte.js";
     import Multitrack from "@multitrack/multitrack";
+    import { pollResult } from "$utils/separate";
+    import { processingState } from "$stores/processingState.svelte";
+    import { LoadingActions } from "$providers/loading.svelte";
     window.ResizeObserver = ResizeObserver;
 
     interface AudioPlayerProps {
+        sessionId: string;
         barHeight?: number;
         timelineHeight?: number;
     }
 
-    let { barHeight = 128, timelineHeight = 30 }: AudioPlayerProps = $props();
+    let { sessionId, barHeight = 128, timelineHeight = 30 }: AudioPlayerProps = $props();
 
     let player: Multitrack | null = null;
     let volumeInput: HTMLInputElement;
@@ -198,8 +202,18 @@
         time = player.getCurrentTime();
     };
 
-    onMount(() => {
+    $effect(() => {
+        LoadingActions.hide();
         initMultitrack();
+    });
+
+    onMount(() => {
+        // Loads the tracks from the api /result/sessionId
+        pollResult(sessionId);
+
+        LoadingActions.show("Loading audio tracks...");
+
+        // initMultitrack();
 
         let resizeTimeout = createDebounce(100);
         const resizeObserver = new ResizeObserver(() => {

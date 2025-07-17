@@ -21,7 +21,7 @@
     }
 </script>
 
-<div class="drop-container" ondrop={handleDrop} ondragover={handleDragOver}>
+<div class="drop-container" ondrop={handleDrop} ondragover={handleDragOver} role="region">
     <h2>Drop your track here.</h2>
     <input
             id="audio-file"

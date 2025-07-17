@@ -25,7 +25,7 @@ export const separate = async () => {
     }
 
     console.log("Starting separation with form data:");
-    formData.keys().forEach(key => {
+    Array.from(formData.keys()).forEach((key: string) => {
         console.log(`${key}: ${formData.get(key)}`);
     });
 
@@ -45,7 +45,9 @@ export const separate = async () => {
     }
 }
 
-export const pollResult = async () => {
+export const pollResult = async (sessionId?: string) => {
+    if (sessionId) processingState.sessionId = sessionId;
+
     if (!processingState.sessionId) {
         console.error("No session ID provided for polling.");
         return;
@@ -68,6 +70,13 @@ export const pollResult = async () => {
 
         LoadingActions.show(processingState.status);
         clearInterval(interval);
+        if (res.status === 404 || res.status === 500) {
+            console.error("Session not found, redirecting to home.");
+            LoadingActions.hide();
+            goto("/");
+            return;
+        }
+
         if (res.ok) {
             const blob = await res.blob();
             const url = URL.createObjectURL(blob);
@@ -81,7 +90,6 @@ export const pollResult = async () => {
             processingState.status = "Download started";
             await decompressZipBlob(blob);
             LoadingActions.hide();
-            await goto("/new");
         } else {
             const errData = await res.json();
             processingState.status = `Error: ${errData.message}`;

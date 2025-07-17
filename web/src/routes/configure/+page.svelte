@@ -24,6 +24,7 @@
         await separate();
         if (processingState.status === "Idle") return;
         LoadingActions.show(processingState.status);
+        await goto(`/${processingState.sessionId}`);
     };
 </script>
 
