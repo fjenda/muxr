@@ -30,18 +30,18 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 # install frontend dependencies
-cd ../frontend
+cd web
 npm install
 ```
 
 ### Running the App
 
 ```bash
-# Start the FastAPI backend
+# start the FastAPI backend
 cd api
 python3 main.py
-# Start the Svelte frontend
-cd ../frontend
+# start the svelte client
+cd web
 npm run dev
 ```
 ### Docker Deployment
