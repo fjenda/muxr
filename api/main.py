@@ -176,7 +176,7 @@ def get_result(session_id: str):
 
     # we're done, send the zipfile
     status = status_file.read_text().strip()
-    if status == "success" and zip_file.exists():
+    if status == "success" and zip_file.exists() and zip_file.stat().st_size > 0:
         return FileResponse(
             zip_file,
             media_type="application/zip",
