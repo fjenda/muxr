@@ -32,15 +32,32 @@ OUTPUT_ROOT = BASE_DIR / "outputs"
 UPLOAD_ROOT.mkdir(exist_ok=True)
 OUTPUT_ROOT.mkdir(exist_ok=True)
 
-def run_demucs(file_path: Path, output_path: Path, model: str, mp3: bool, mp3_rate: int, two_stems: str | None):
+def parse_human_size(size_str) -> float:
+    units = {'K': 1e3, 'M': 1e6, 'G': 1e9}
+    try:
+        if size_str[-1] in units:
+            return float(size_str[:-1]) * units[size_str[-1]]
+        return float(size_str)
+    except ValueError:
+        return 0.0
+
+def run_demucs(file_path: Path, output_path: Path, model: str, output_format: str, mp3_rate: int, two_stems: str | None):
     cmd = [
         sys.executable, "-m", "demucs.separate",
         "-n", model,
+        "-j", str(os.cpu_count() // 2 or 4),
         "-o", str(output_path),
     ]
-    if mp3:
-        cmd.append("--mp3")
-        cmd.append(f"--mp3-bitrate={mp3_rate}")
+
+    match output_format:
+        case "mp3":
+            cmd.append("--mp3")
+            cmd.append(f"--mp3-bitrate={mp3_rate}")
+        case "flac":
+            cmd.append("--flac")
+        case _:
+            pass
+
     if two_stems:
         cmd.append(f"--two-stems={two_stems}")
     cmd.append(str(file_path))
@@ -50,6 +67,8 @@ def run_demucs(file_path: Path, output_path: Path, model: str, mp3: bool, mp3_ra
 
     poll_file = output_path / "last_poll.txt"
     poll_file.write_text(datetime.now(timezone.utc).isoformat())
+
+    print(cmd)
 
     process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
 
@@ -72,7 +91,7 @@ def run_demucs(file_path: Path, output_path: Path, model: str, mp3: bool, mp3_ra
         line = line.strip()
         if not line:
             continue
-#         print(line)
+        # print(line)
         if "%" in line and "|" in line and "/" in line:
             try:
                 percent_str = line.split('%')[0].strip()
@@ -81,8 +100,8 @@ def run_demucs(file_path: Path, output_path: Path, model: str, mp3: bool, mp3_ra
                 fraction_part = [part for part in line.split() if "/" in part]
                 if fraction_part:
                     current, total = fraction_part[0].split('/')
-                    current = float(current)
-                    total = float(total)
+                    current = parse_human_size(current)
+                    total = parse_human_size(total)
                     progress_file.write_text(json.dumps({
                         "type": "progress",
                         "percentage": percentage,

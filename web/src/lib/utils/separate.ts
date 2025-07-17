@@ -16,7 +16,8 @@ export const separate = async () => {
     const formData = new FormData();
     formData.append("file", selectedFile.file);
     formData.append("model", "htdemucs");
-    formData.append("mp3", selectedFile.file.type === "audio/mpeg" ? "true" : "false");
+    // TODO: this is the OUTPUT files type, so select between returning mp3, flac and wav
+    formData.append("output_format", "mp3");
     formData.append("mp3_bitrate", "320");
 
     if (configurationState.twoStems) {
