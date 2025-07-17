@@ -37,6 +37,15 @@
     //     await player.addTrack();
     // };
 
+    let cursorX: Number = $state(0);
+    let showCursorPlayhead: boolean = $state(false);
+
+    function updateCursorPlayhead(e: MouseEvent) {
+        const rect = waveformContainer.getBoundingClientRect();
+        cursorX = e.clientX - rect.left;
+    }
+
+
     const backward = () => {
         if (!player) return;
         player.setTime(player.getCurrentTime() - 5);
@@ -237,7 +246,12 @@
                 {/each}
             </div>
             <div class="waveform-container-wrapper">
-                <div id="waveform" class="waveform-container" bind:this={waveformContainer}></div>
+                <div id="waveform" class="waveform-container" bind:this={waveformContainer}
+                     onmousemove={updateCursorPlayhead}
+                     onmouseenter={() => showCursorPlayhead = true}
+                     onmouseleave={() => showCursorPlayhead = false}>
+                    <div class="cursor-playhead" style="left: {cursorX}px" class:visible={showCursorPlayhead}></div>
+                </div>
             </div>
         </div>
     </div>
@@ -423,10 +437,27 @@
         /*width: 100%;*/
         flex-grow: 1;
         position: relative;
+        cursor: text;
     }
 
     #waveform > :global(div) {
         overflow: hidden !important;
+    }
+
+    .cursor-playhead {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background-color: #787878;
+        pointer-events: none;
+        z-index: 10;
+        opacity: 0;
+        transition: opacity 0.1s;
+    }
+
+    .cursor-playhead.visible {
+        opacity: 1;
     }
 
     @media screen and (max-width: 650px) {
