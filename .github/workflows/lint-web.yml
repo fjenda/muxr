@@ -1,4 +1,4 @@
-name: Check SvelteKit web
+name: Lint and check muxr client
 
 on:
   push:
