@@ -14,6 +14,7 @@
     import { pollResult } from "$utils/separate";
     import { processingState } from "$stores/processingState.svelte";
     import { LoadingActions } from "$providers/loading.svelte";
+    import { getWaveformColor } from '$utils/getWaveformColor'
     window.ResizeObserver = ResizeObserver;
 
     interface AudioPlayerProps {
@@ -172,6 +173,8 @@
                     url: track.url,
                     options: {
                         height: barHeight,
+                        waveColor: getWaveformColor(track.title),
+                        progressColor: getWaveformColor(track.title) + "50",
                     },
                 }))
             ],
@@ -181,8 +184,8 @@
                 timelineOptions: {
                     container: timelineContainer,
                     height: timelineHeight,
-                    timeInterval: 1,
-                    primaryLabelInterval: 5,
+                    // timeInterval: 1,
+                    // primaryLabelInterval: 5,
                     style: {
                         color: "#fff",
                     }
@@ -196,6 +199,11 @@
             updateTrackVolumes();
         });
     };
+
+    const zoom = (e: Event) => {
+        if (!player) return;
+        player.zoom((e.target as HTMLInputElement).valueAsNumber);
+    }
 
     const getTime = () => {
         if (!player) return;
@@ -259,7 +267,7 @@
                                         onClick={() => toggleSolo(i)}
                                         aria-label={state.solo ? "Un-solo track" : "Solo track"}
                                 >
-                                    S
+                                    <strong>S</strong>
                                 </Button>
                                 <Button
                                         small
@@ -285,7 +293,7 @@
                     </div>
                 {/each}
             </div>
-            <div class="waveform-container-wrapper">
+            <div class="waveform-container-wrapper" data-simplebar>
                 <div id="waveform" class="waveform-container" role="region"
                      bind:this={waveformContainer}
                      onmousemove={updateCursorPlayhead}
@@ -298,12 +306,18 @@
         </div>
     </div>
     <div class="timeline-controls">
-        <div class="range-wrapper">
+        <div class="range-wrapper controls-box">
+            <label for="volume">Zoom</label>
+            <input id="volume" type="range" min="10" max="100" value="10" oninput={zoom} />
+        </div>
+        <div class="range-wrapper controls-box">
             <label for="volume">Volume</label>
             <input id="volume" type="range" min="0" max="1" value="1" step="0.01" bind:this={volumeInput} oninput={setMasterVolume} />
+        </div>
+        <div class="time-wrapper controls-box">
             <p>{formatTime(time)}</p>
         </div>
-        <div class="button-group">
+        <div class="button-group controls-box">
             <Button onClick={backward} tabindex="1">
                 <FontAwesomeIcon icon={faBackward} />
             </Button>
@@ -335,7 +349,7 @@
         padding: 1rem;
     }
 
-    .range-wrapper {
+    .controls-box {
         display: flex;
         width: 100%;
         height: 100%;
@@ -349,23 +363,13 @@
         border: 1px solid var(--border-color-light);
     }
 
+    .time-wrapper {
+        width: fit-content;
+    }
+
     .range-wrapper label {
         white-space: nowrap;
     }
-
-    .button-group {
-        display: flex;
-        height: 100%;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-
-        background-color: var(--element-color-light);
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid var(--border-color-light);
-    }
-
     .timeline-controls {
         display: flex;
         align-items: center;
@@ -478,7 +482,7 @@
     .waveform-container-wrapper {
         width: 100%;
         height: 100%;
-        overflow: hidden;
+        overflow: auto hidden;
     }
 
     /* The actual waveform container */
@@ -530,18 +534,13 @@
             gap: 0.5rem;
         }
 
-        .button-group {
+        .button-group, .time-wrapper {
             width: 100%;
         }
     }
 
     @media screen and (prefers-color-scheme: dark) {
-        .range-wrapper {
-            background-color: var(--accent-color-dark);
-            border: 1px solid var(--border-color-dark);
-        }
-
-        .button-group {
+        .controls-box {
             background-color: var(--accent-color-dark);
             border: 1px solid var(--border-color-dark);
         }

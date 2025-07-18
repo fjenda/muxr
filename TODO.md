@@ -1,9 +1,9 @@
 New features:
-- [ ] Title/Welcome Screen
+- [x] Title/Welcome Screen
 - [x] change url /new to /<song_id>
 - [x] If that song_id does not exist, redirect to main page
 - [ ] Extract from YouTube link
-- [ ] Colorize the waveform links
+- [x] Colorize the waveform links
 - [x] Volume for every track
 - [x] Master volume
 - [ ] Option to download individual stems
@@ -11,7 +11,7 @@ New features:
 - [ ] Option to change the file format (mp3/fac/wav)
 - [x] move timeline to top
 - [ ] Detect BPM and display it
-- [ ] Zoom ?
+- [x] Zoom ?
 
 Bug fixes:
 - [x] After track finished playing, user should be able to use space to restart

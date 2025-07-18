@@ -8,113 +8,118 @@ import { trackUrls } from "$stores/trackUrls.svelte.js";
 import { goto } from "$app/navigation";
 
 export const separate = async () => {
-    if (!selectedFile.file) {
-        console.error("No file selected for separation.");
-        return;
-    }
+  if (!selectedFile.file) {
+    console.error("No file selected for separation.");
+    return;
+  }
 
-    const formData = new FormData();
-    formData.append("file", selectedFile.file);
-    formData.append("model", "htdemucs");
-    // TODO: this is the OUTPUT files type, so select between returning mp3, flac and wav
-    formData.append("output_format", "mp3");
-    formData.append("mp3_bitrate", "320");
+  const formData = new FormData();
+  formData.append("file", selectedFile.file);
+  formData.append("model", "htdemucs");
+  // TODO: this is the OUTPUT files type, so select between returning mp3, flac and wav
+  formData.append("output_format", "mp3");
+  formData.append("mp3_bitrate", "320");
 
-    if (configurationState.twoStems) {
-        formData.append("two_stems", (configurationState.pickedStem as string).toLowerCase());
-    }
+  if (configurationState.twoStems) {
+    formData.append(
+      "two_stems",
+      (configurationState.pickedStem as string).toLowerCase()
+    );
+  }
 
-    console.log("Starting separation with form data:");
-    Array.from(formData.keys()).forEach((key: string) => {
-        console.log(`${key}: ${formData.get(key)}`);
+  console.log("Starting separation with form data:");
+  Array.from(formData.keys()).forEach((key: string) => {
+    console.log(`${key}: ${formData.get(key)}`);
+  });
+
+  processingState.status = "Uploading your file...";
+  try {
+    const res = await fetch("/api/separate", {
+      method: "POST",
+      body: formData,
     });
-
-    processingState.status = "Uploading your file...";
-    try {
-        const res = await fetch("/api/separate", {
-            method: "POST",
-            body: formData
-        });
-        const data = await res.json();
-        processingState.sessionId = data.session_id;
-        processingState.status = "Separating...";
-        await pollResult();
-    } catch (err) {
-        console.error("Upload error:", err);
-        processingState.status = "Upload failed";
-    }
-}
+    const data = await res.json();
+    processingState.sessionId = data.session_id;
+    processingState.status = "Separating...";
+    await pollResult();
+  } catch (err) {
+    console.error("Upload error:", err);
+    processingState.status = "Upload failed";
+  }
+};
 
 export const pollResult = async (sessionId?: string) => {
-    if (sessionId) processingState.sessionId = sessionId;
+  if (sessionId) processingState.sessionId = sessionId;
 
-    if (!processingState.sessionId) {
-        console.error("No session ID provided for polling.");
-        return;
+  if (!processingState.sessionId) {
+    console.error("No session ID provided for polling.");
+    return;
+  }
+
+  processingState.percentage = 0;
+
+  const interval = setInterval(async () => {
+    LoadingActions.show(processingState.status);
+    const res = await fetch(`api/result/${processingState.sessionId}`);
+    if (res.status === 202) {
+      try {
+        const body = await res.json();
+        console.log(body);
+        processingState.percentage =
+          body.progress?.percentage || processingState.percentage;
+        processingState.status = `Processing (${processingState.sessionId}) at ${processingState.percentage}%`;
+      } catch {}
+      return;
     }
 
-    processingState.percentage = 0;
+    LoadingActions.show(processingState.status);
+    clearInterval(interval);
+    if (res.status === 404 || res.status === 500) {
+      console.error("Session not found, redirecting to home.");
+      LoadingActions.hide();
+      goto("/");
+      return;
+    }
 
-    const interval = setInterval(async () => {
-        LoadingActions.show(processingState.status);
-        const res = await fetch(`api/result/${processingState.sessionId}`);
-        if (res.status === 202) {
-            try {
-                const body = await res.json();
-                console.log(body);
-                processingState.percentage = body.progress?.percentage || processingState.percentage;
-                processingState.status = `Processing (${processingState.sessionId}) at ${processingState.percentage}%`;
-            } catch {}
-            return;
-        }
-
-        LoadingActions.show(processingState.status);
-        clearInterval(interval);
-        if (res.status === 404 || res.status === 500) {
-            console.error("Session not found, redirecting to home.");
-            LoadingActions.hide();
-            goto("/");
-            return;
-        }
-
-        if (res.ok) {
-            const blob = await res.blob();
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `stems_${processingState.sessionId}.zip`;
-            document.body.appendChild(a);
-            // a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            processingState.status = "Download started";
-            await decompressZipBlob(blob);
-            LoadingActions.hide();
-        } else {
-            const errData = await res.json();
-            processingState.status = `Error: ${errData.message}`;
-        }
-    }, 2000);
-}
+    if (res.ok) {
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `stems_${processingState.sessionId}.zip`;
+      document.body.appendChild(a);
+      // a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      processingState.status = "Download started";
+      await decompressZipBlob(blob);
+      LoadingActions.hide();
+    } else {
+      const errData = await res.json();
+      processingState.status = `Error: ${errData.message}`;
+    }
+  }, 2000);
+};
 
 async function decompressZipBlob(blob: Blob) {
-    try {
-        const arrayBuffer = await blob.arrayBuffer();
-        const uint8Array = new Uint8Array(arrayBuffer);
+  try {
+    const arrayBuffer = await blob.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
 
-        const extracted = unzipSync(uint8Array); // returns { [filename: string]: Uint8Array }
+    const extracted = unzipSync(uint8Array); // returns { [filename: string]: Uint8Array }
 
-        trackUrls.clear(); // clear previous URLs
-        for (const [filename, data] of Object.entries(extracted)) {
-            const type = getMimeType(filename);
-            const fileBlob = new Blob([data], { type });
-            const url = URL.createObjectURL(fileBlob);
-            trackUrls.addUrl({ title: filename, url: url });
-        }
-
-        processingState.status = "Decompression and processing complete";
-    } catch (err) {
-        console.error("Decompression error:", err);
-        processingState.status = "Decompression failed";
+    trackUrls.clear(); // clear previous URLs
+    for (const [filename, data] of Object.entries(extracted)) {
+      const title = filename.split(".").slice(0, -1).join("."); // remove extension
+      const type = getMimeType(filename);
+      const fileBlob = new Blob([data], { type });
+      const url = URL.createObjectURL(fileBlob);
+      trackUrls.addUrl({ title, url });
     }
+
+    processingState.status = "Decompression and processing complete";
+  } catch (err) {
+    console.error("Decompression error:", err);
+    processingState.status = "Decompression failed";
+  }
 }

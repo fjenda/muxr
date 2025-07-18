@@ -75,7 +75,7 @@
         }
 
         .drop-container:hover {
-            background-color: #181818;
+            background-color: #202020;
         }
     }
 </style>
