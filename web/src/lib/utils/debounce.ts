@@ -3,7 +3,7 @@
  * @param delay - The delay in milliseconds before the function is executed
  */
 export const createDebounce = (delay: number): (func: () => void) => void => {
-    let timeout: number | undefined = undefined;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
 
     return (func: () => void) => {
         clearTimeout(timeout);

@@ -47,5 +47,5 @@
 </div>
 
 <style lang="scss">
-    @import '../../../lib/styles/configure';
+    @use '../../../lib/styles/configure' as *;
 </style>
