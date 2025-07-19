@@ -4,6 +4,8 @@ export interface Track {
 }
 
 export const trackUrls = $state({
+    // a.click() will go here
+    downloadZip: () => {},
     tracks: [] as Track[],
     addUrl: (track: Track) => {
         if (!trackUrls.tracks.includes(track)) {

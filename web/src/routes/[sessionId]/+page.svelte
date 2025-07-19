@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { AudioPlayer } from "$components";
+    import { AudioPlayer, Button } from '$components'
     import { DialogActions, type DialogComponent } from "$providers/dialog.svelte";
     import { AlertDialog } from "$dialogs";
     import { onDrop } from "$utils/loadFile";
 
     import { page } from '$app/state';
+    import { trackUrls } from '$stores/trackUrls.svelte'
     const sessionId = page.params.sessionId;
 
     const showAlert = (file: File) => {
@@ -40,6 +41,7 @@
      role="region"
 >
     <AudioPlayer barHeight={128} timelineHeight={30} sessionId={sessionId} />
+    <Button onClick={() => trackUrls.downloadZip()}>Download all stems</Button>
 </div>
 
 <style>

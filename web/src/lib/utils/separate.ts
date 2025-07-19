@@ -89,7 +89,7 @@ export const pollResult = async (sessionId?: string) => {
       a.href = url;
       a.download = `stems_${processingState.sessionId}.zip`;
       document.body.appendChild(a);
-      // a.click();
+      trackUrls.downloadZip = () => a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       processingState.status = "Download started";
