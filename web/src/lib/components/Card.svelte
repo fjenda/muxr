@@ -44,25 +44,41 @@
     backdrop-filter: blur($blur);
     -webkit-backdrop-filter: blur($blur);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    background: linear-gradient(135deg, rgba(24, 24, 24, 0.6), rgba(32, 28, 28, 0.4));
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 
-    &:hover {
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
       background: linear-gradient(135deg, rgba(32, 32, 32, 0.6), rgba(40, 36, 36, 0.4));
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+      z-index: 0;
+    }
+
+    > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    &:hover {
       box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border: 1px solid var(--waveform-color, rgba(255, 255, 255, 0.15));
-    }
 
-    &:active {
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      &::before {
+        opacity: 1;
+      }
     }
 
     &.highlighted {
-      background: linear-gradient(135deg, rgba(60, 50, 60, 0.4), rgba(45, 40, 40, 0.3));
+      background: linear-gradient(135deg, rgb(69 69 69 / 40%), rgba(45, 40, 40, 0.3));
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       border: 1px solid rgba(255, 255, 255, 0.18);
       border: 1px solid var(--waveform-color, rgba(255, 255, 255, 0.2));
+      &::before {
+        opacity: 0.5;
+      }
     }
 
 

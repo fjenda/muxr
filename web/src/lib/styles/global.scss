@@ -90,13 +90,26 @@ h1, h2, h3, h4, h5, h6 {
         background-color: #101010;
     }
 }
-
 html, body {
     width: 100%;
     height: 100vh;
     overflow: hidden;
 }
 
+body {
+    background-image: linear-gradient(to right,rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.02) 1px,transparent 1px);
+    background-size: 24px 24px;
+    animation: grid-move 3s linear infinite;
+}
+
+@keyframes grid-move {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: -24px -24px;
+    }
+}
 .simplebar-track {
     background: var(--border-color-dark);
 }

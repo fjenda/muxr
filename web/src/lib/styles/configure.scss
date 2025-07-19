@@ -110,7 +110,7 @@ $text-light: var(--text-color-light, #222);
   }
 
   &.selected {
-    background: linear-gradient(135deg, rgba(60, 50, 60, 0.4), rgba(45, 40, 40, 0.3));
+    background: linear-gradient(135deg, rgb(69 69 69 / 40%), rgba(45, 40, 40, 0.3));
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
     border-color: rgba(255, 255, 255, 0.25);
     color: $text-dark;
