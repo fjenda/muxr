@@ -17,7 +17,7 @@ Bug fixes:
 - [x] After track finished playing, user should be able to use space to restart
 - [x] After pressing an element and pressing space, it should not reactivate the element
 - [x] Timeline suddenly disappeared, the container is there tho
-- [ ] If the song_id does not exist it should return 404, not 500
+- [x] If the song_id does not exist it should return 404, not 500
 
 Nice to have:
 - [ ] a "master track" that has all the stems together

@@ -163,6 +163,12 @@ def get_result(session_id: str):
     progress_file = output_path / "progress.json"
     poll_file = output_path / "last_poll.txt"
 
+    if not output_path.exists():
+        return JSONResponse(
+            status_code=404,
+            content={"status": "not_found", "message": f"Session ID {session_id} does not exist."}
+        )
+
     poll_file.write_text(datetime.now(timezone.utc).isoformat())
 
     if not status_file.exists():
