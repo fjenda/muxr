@@ -2,7 +2,6 @@
     import { dialogState, DialogActions } from "./dialog.svelte";
 
     let { children } = $props();
-    export { DialogActions } from "./dialog.svelte";
 
     const handleBackdropClick = (e: MouseEvent) => {
         if (e.target === e.currentTarget) {

@@ -1,9 +1,6 @@
 <script lang="ts">
-    import { LoadingIndicator } from "$components";
-    import { loading, LoadingActions } from './loading.svelte.js';
-
-    export { loading, LoadingActions } from './loading.svelte.js';
+    import {LoadingIndicator} from "$components";
 </script>
 
-<slot />
-<LoadingIndicator />
+<slot/>
+<LoadingIndicator/>

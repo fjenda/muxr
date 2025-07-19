@@ -12,7 +12,6 @@
     import { trackUrls } from "$stores/trackUrls.svelte.js";
     import Multitrack from "@multitrack/multitrack";
     import { pollResult } from "$utils/separate";
-    import { processingState } from "$stores/processingState.svelte";
     import { LoadingActions } from "$providers/loading.svelte";
     import { getWaveformColor } from '$utils/getWaveformColor'
     window.ResizeObserver = ResizeObserver;
@@ -61,7 +60,11 @@
         if (player.getCurrentTime() >= player.getMaxDuration()) {
             player.setTime(0);
         }
-        playing ? player.pause() : player.play();
+        if (playing) {
+            player.pause();
+        } else {
+            player.play();
+        }
         playing = player.isPlaying();
     };
 
@@ -81,9 +84,9 @@
         const anySolo = trackStates.some(ts => ts.solo);
         trackStates.forEach((state, index) => {
             if (state.mute || (anySolo && !state.solo)) {
-                player.setTrackVolume(index, 0);
+                player?.setTrackVolume(index, 0);
             } else {
-                player.setTrackVolume(index, trackStates[index].volume * masterVolume);
+                player?.setTrackVolume(index, trackStates[index].volume * masterVolume);
             }
         });
     };
@@ -194,8 +197,13 @@
         );
 
         player.once('canplay', () => {
+            if (!player) return;
             player.setTime(time);
-            playing ? player.play() : player.pause();
+            if (playing) {
+                player.play();
+            } else {
+                player.pause();
+            }
             updateTrackVolumes();
         });
     };
@@ -255,7 +263,7 @@
     <div class="waveform-scroll-wrapper" bind:this={waveformScrollContainer} data-simplebar>
         <div class="waveform-grid">
             <div class="track-controls-panel" style="margin-top: {timelineHeight}px">
-                {#each trackStates as state, i}
+                {#each trackStates as state, i (i)}
                     <div class="track-control" style="height: {barHeight}px;">
                         <div class="info-panel">
                             <p>{state.title}</p>

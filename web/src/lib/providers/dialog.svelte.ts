@@ -1,7 +1,7 @@
 import type { Component } from "svelte";
 
 export type DialogComponent = Component;
-export type DialogProps = Record<string, any>;
+export type DialogProps = Record<string, unknown>;
 
 export const dialogState = $state({
     component: null as DialogComponent | null,

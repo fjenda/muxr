@@ -59,7 +59,7 @@
 					console.log(body);
 					percentage = body.progress?.percentage || percentage;
 					status = `Processing (${sessionId}) at ${percentage}%`;
-				} catch {}
+				} catch { /* empty */ }
 				return;
 			}
 

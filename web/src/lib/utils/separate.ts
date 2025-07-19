@@ -68,7 +68,7 @@ export const pollResult = async (sessionId?: string) => {
         processingState.percentage =
           body.progress?.percentage || processingState.percentage;
         processingState.status = `Processing (${processingState.sessionId}) at ${processingState.percentage}%`;
-      } catch {}
+      } catch { /* empty */ }
       return;
     }
 

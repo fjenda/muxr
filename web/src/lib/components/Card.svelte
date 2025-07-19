@@ -3,15 +3,11 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { getWaveformColor } from "$utils/getWaveformColor";
 
-    interface CardProps {
-        icon: IconDefinition;
-        title: string;
-        selected: boolean;
-        onClick: () => void;
-        children?: any;
-    }
 
-    let { icon, title, selected = false, onClick, children }: CardProps = $props();
+   export let icon: IconDefinition;
+    export let title: string;
+    export let selected: boolean = false;
+    export let onClick: () => void;
 </script>
 
 <div class="card" class:highlighted={selected} onclick={onClick} role="button" tabindex="0"
@@ -21,11 +17,7 @@
         <FontAwesomeIcon icon={icon} size="3x"/>
     </div>
     <h3 class="title">{title}</h3>
-    {#if children}
-        <div class="card-children">
-            {@render children()}
-        </div>
-    {/if}
+    <slot />
 </div>
 
 <style lang="scss">

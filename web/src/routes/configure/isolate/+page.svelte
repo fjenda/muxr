@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button, Card } from "$components";
     import { goto } from "$app/navigation";
-    import { faMicrophone, faDrum, faGuitar, faQuestion, faKeyboard } from "@fortawesome/free-solid-svg-icons";
+    import { faMicrophone, faDrum, faGuitar, faQuestion } from "@fortawesome/free-solid-svg-icons";
     import { configurationState, StemType } from "$stores/configuration.svelte";
     import { separate } from "$utils/separate";
     import { processingState } from "$stores/processingState.svelte";
@@ -35,7 +35,7 @@
         <p>muxr will automatically detect the selected option in your audio and split it into a separate track.</p>
     </div>
     <div class="card-grid">
-        {#each options as { icon, title }}
+        {#each options as { icon, title } ( title )}
             <Card {icon} {title} selected={selected === title} onClick={() => handleCardClick(title)} />
         {/each}
     </div>

@@ -5,8 +5,6 @@
     import { onDrop } from "$utils/loadFile";
 
     import { page } from '$app/state';
-    import { onMount } from "svelte";
-    import { processingState } from "$stores/processingState.svelte";
     const sessionId = page.params.sessionId;
 
     const showAlert = (file: File) => {

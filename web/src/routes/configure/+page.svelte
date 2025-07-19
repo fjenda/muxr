@@ -34,7 +34,7 @@
         <h2 class="title">Separation type</h2>
     </div>
     <div class="card-grid">
-        {#each options as { icon, title }}
+        {#each options as { icon, title } (title)}
             <Card {icon} {title} selected={selected === title} onClick={() => handleCardClick(title)} />
         {/each}
     </div>
@@ -53,5 +53,5 @@
 </div>
 
 <style lang="scss">
-  @import '../../lib/styles/configure';
+  @use '../../lib/styles/configure' as *;
 </style>
