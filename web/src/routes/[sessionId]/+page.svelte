@@ -48,7 +48,6 @@
         justify-content: center;
         align-items: center;
         background-color: var(--accent-color-light);
-        border: 2px solid var(--border-color-light);
         border-radius: 0.5rem;
         flex-grow: 1;
         position: relative;
@@ -80,7 +79,6 @@
     @media screen and (prefers-color-scheme: dark) {
         .container {
             background-color: var(--element-color-dark);
-            border: 2px solid var(--border-color-dark);
         }
 
         .container::before {
