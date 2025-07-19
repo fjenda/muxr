@@ -178,6 +178,9 @@
                         height: barHeight,
                         waveColor: getWaveformColor(track.title),
                         progressColor: getWaveformColor(track.title) + "50",
+                        barWidth: 6,
+                        barGap: 0,
+                        barRadius: 4,
                     },
                 }))
             ],
@@ -207,6 +210,24 @@
             updateTrackVolumes();
         });
     };
+
+    const onWheel = (e: WheelEvent) => {
+        if (!player) return;
+
+        if (e.ctrlKey) {
+            e.preventDefault();
+
+            // Read current zoom value from the player if it provides it
+            // If not, you can maintain your own `currentZoom` state.
+            let zoomValue = parseFloat((document.querySelector('#zoom-range') as HTMLInputElement)?.value) || 10;
+
+            zoomValue += e.deltaY > 0 ? -5 : 5; // adjust step as you like
+            zoomValue = Math.max(10, Math.min(500, zoomValue)); // clamp to your min/max
+
+            (document.querySelector('#zoom-range') as HTMLInputElement).value = zoomValue.toString();
+            player.zoom(zoomValue);
+        }
+    }
 
     const zoom = (e: Event) => {
         if (!player) return;
@@ -260,7 +281,7 @@
 
 <svelte:window onkeydown={onKeyDown} />
 <div class="audio-player">
-    <div class="waveform-scroll-wrapper" bind:this={waveformScrollContainer} data-simplebar>
+    <div class="waveform-scroll-wrapper" bind:this={waveformScrollContainer} data-simplebar data-simplebar-auto-hide="false">
         <div class="waveform-grid">
             <div class="track-controls-panel" style="margin-top: {timelineHeight}px">
                 {#each trackStates as state, i (i)}
@@ -301,12 +322,14 @@
                     </div>
                 {/each}
             </div>
-            <div class="waveform-container-wrapper" data-simplebar>
+            <div class="waveform-container-wrapper" data-simplebar data-simplebar-auto-hide="false">
                 <div id="waveform" class="waveform-container" role="region"
                      bind:this={waveformContainer}
                      onmousemove={updateCursorPlayhead}
                      onmouseenter={() => showCursorPlayhead = true}
-                     onmouseleave={() => showCursorPlayhead = false}>
+                     onmouseleave={() => showCursorPlayhead = false}
+                     onwheel={onWheel}
+                >
                     <div class="timeline-container" bind:this={timelineContainer}></div>
                     <div class="cursor-playhead" style="left: {cursorX}px" class:visible={showCursorPlayhead}></div>
                 </div>
@@ -316,7 +339,7 @@
     <div class="timeline-controls">
         <div class="range-wrapper controls-box">
             <label for="volume">Zoom</label>
-            <input id="volume" type="range" min="10" max="100" value="10" oninput={zoom} />
+            <input id="zoom-range" type="range" min="10" max="500" value="10" oninput={zoom} />
         </div>
         <div class="range-wrapper controls-box">
             <label for="volume">Volume</label>
@@ -493,6 +516,7 @@
 
     /* The actual waveform container */
     .waveform-container {
+        width: auto;
         min-width: 100%;
         display: inline-block;
     }
