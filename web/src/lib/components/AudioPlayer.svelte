@@ -216,13 +216,10 @@
 
         if (e.ctrlKey) {
             e.preventDefault();
-
-            // Read current zoom value from the player if it provides it
-            // If not, you can maintain your own `currentZoom` state.
             let zoomValue = parseFloat((document.querySelector('#zoom-range') as HTMLInputElement)?.value) || 10;
 
-            zoomValue += e.deltaY > 0 ? -5 : 5; // adjust step as you like
-            zoomValue = Math.max(10, Math.min(500, zoomValue)); // clamp to your min/max
+            zoomValue += e.deltaY > 0 ? -5 : 5;
+            zoomValue = Math.max(10, Math.min(500, zoomValue));
 
             (document.querySelector('#zoom-range') as HTMLInputElement).value = zoomValue.toString();
             player.zoom(zoomValue);

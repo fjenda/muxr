@@ -9,6 +9,7 @@ ENV DOCKER=true
 
 COPY . .
 
+RUN cd node_modules/wavesurfer-multitrack && npm install && npm run build
 EXPOSE 5173
 
 RUN npm run dev -- --host 0.0.0.0 & sleep 2 && pkill -f vite || true
