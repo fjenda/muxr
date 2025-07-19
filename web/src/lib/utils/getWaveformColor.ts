@@ -1,4 +1,5 @@
-export const getWaveformColor = (title: string): string => {
+export const getWaveformColor = (title: string): string | undefined => {
+  title = title.toLowerCase();
   switch (title) {
     case "bass":
       return "#dfc768";
@@ -13,6 +14,6 @@ export const getWaveformColor = (title: string): string => {
     case "other":
       return "#7289f3";
     default:
-      return "#ffffff"; // Default color for unrecognized titles
+      return undefined;
   }
 };
