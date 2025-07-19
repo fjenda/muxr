@@ -1,11 +1,11 @@
-import { selectedFile } from "$stores/selectedFile.svelte";
-import { configurationState } from "$stores/configuration.svelte";
-import { processingState } from "$stores/processingState.svelte";
-import { LoadingActions } from "$providers/loading.svelte";
-import { unzipSync } from "fflate";
-import { getMimeType } from "$utils/mimetype";
-import { trackUrls } from "$stores/trackUrls.svelte.js";
-import { goto } from "$app/navigation";
+import { selectedFile } from '$stores/selectedFile.svelte'
+import { configurationState, FileType } from '$stores/configuration.svelte'
+import { processingState } from '$stores/processingState.svelte'
+import { LoadingActions } from '$providers/loading.svelte'
+import { unzipSync } from 'fflate'
+import { getMimeType } from '$utils/mimetype'
+import { trackUrls } from '$stores/trackUrls.svelte.js'
+import { goto } from '$app/navigation'
 
 export const separate = async () => {
   if (!selectedFile.file) {
@@ -16,9 +16,10 @@ export const separate = async () => {
   const formData = new FormData();
   formData.append("file", selectedFile.file);
   formData.append("model", "htdemucs");
-  // TODO: this is the OUTPUT files type, so select between returning mp3, flac and wav
-  formData.append("output_format", "mp3");
-  formData.append("mp3_bitrate", "320");
+  formData.append("output_format", configurationState.outputFileType as string);
+
+  if (configurationState.outputFileType === FileType.MP3)
+    formData.append("mp3_bitrate", "320");
 
   if (configurationState.twoStems) {
     formData.append(

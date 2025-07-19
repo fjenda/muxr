@@ -2,7 +2,7 @@
     import { goto } from "$app/navigation";
     import { faDrum, faMicrophone } from "@fortawesome/free-solid-svg-icons";
     import { Button, Card } from "$components";
-    import { configurationState } from "$stores/configuration.svelte";
+    import { configurationState, FileType } from '$stores/configuration.svelte'
     import { separate } from "$utils/separate";
     import { processingState } from "$stores/processingState.svelte";
     import { LoadingActions } from "$providers/loading.svelte";
@@ -15,6 +15,7 @@
     let selected = "";
     // let loading = false
     const handleCardClick = (title: string) => selected = title;
+    const selectFileType = (type: FileType) => configurationState.outputFileType = type;
     const continueToNext = async () => {
         if (selected === "Isolate one stem") {
             configurationState.twoStems = true;
@@ -39,9 +40,27 @@
         {/each}
     </div>
     <div id="format-options" role="radiogroup" aria-label="Output format">
-        <button type="button" data-format="mp3" class="format-btn selected">MP3</button>
-        <button type="button" data-format="wav" class="format-btn">WAV</button>
-        <button type="button" data-format="flac" class="format-btn">FLAC</button>
+        <button
+          type="button"
+          data-format="mp3"
+          class="format-btn"
+          class:selected={configurationState.outputFileType === FileType.MP3}
+          onclick={() => selectFileType(FileType.MP3)}
+        >MP3</button>
+        <button
+          type="button"
+          data-format="wav"
+          class="format-btn"
+          class:selected={configurationState.outputFileType === FileType.WAV}
+          onclick={() => selectFileType(FileType.WAV)}
+        >WAV</button>
+        <button
+          type="button"
+          data-format="flac"
+          class="format-btn"
+          class:selected={configurationState.outputFileType === FileType.FLAC}
+          onclick={() => selectFileType(FileType.FLAC)}
+        >FLAC</button>
     </div>
     <input type="hidden" name="format" id="format" value="mp3">
 

@@ -8,7 +8,7 @@ New features:
 - [x] Master volume
 - [ ] Option to download individual stems
 - [ ] Option to download all the stems
-- [ ] Option to change the file format (mp3/fac/wav)
+- [x] Option to change the file format (mp3/fac/wav)
 - [x] move timeline to top
 - [ ] Detect BPM and display it
 - [x] Zoom ?
