@@ -25,8 +25,15 @@
 
 <div class="drop-container" ondrop={handleDrop} ondragover={handleDragOver} role="region">
     <FontAwesomeIcon icon={faFileImport} size="4x" />
-    <h2>Drop your track here.</h2>
-    <p>Or click to select a file</p>
+    <span>
+        <h2>Drop your audio file here</h2>
+        <p>
+            For best results, use a high-quality audio file (WAV or FLAC).
+        </p>
+    </span>
+    <button class="file-input-button" onclick={() => document.getElementById('audio-file')?.click()}>
+        <span>Select File</span>
+    </button>
     <input
             id="audio-file"
             type="file"
@@ -36,11 +43,11 @@
     />
 </div>
 
-<style>
+<style lang="scss">
     .drop-container {
         position: relative;
         border-radius: 0.5rem;
-        padding: 1rem;
+        padding: 10rem 2rem;
         width: 100%;
         max-width: 600px;
         display: flex;
@@ -52,6 +59,33 @@
         transition: background-color 0.3s ease;
         border: 2px dashed var(--border-color-light);
         background-color: var(--element-color-light);
+
+        span {
+            text-align: center;
+        }
+
+        button.file-input-button {
+            background-color: var(--accent-color-light);
+            color: var(--text-color-light);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+                background-color: var(--bg-color-light);
+            }
+        }
+
+        @media screen and (prefers-color-scheme: dark) {
+          border: 2px dashed var(--border-color-dark);
+          background-color: var(--element-color-dark);
+
+          &:hover {
+              background-color: var(--bg-color-dark);
+          }
+        }
     }
 
     .file-input {
@@ -62,20 +96,5 @@
         height: 100%;
         opacity: 0;
         cursor: pointer;
-    }
-
-    .drop-container:hover {
-        background-color: #eaeaea;
-    }
-
-    @media screen and (prefers-color-scheme: dark) {
-        .drop-container {
-            border: 2px dashed var(--border-color-dark);
-            background-color: var(--element-color-dark);
-        }
-
-        .drop-container:hover {
-            background-color: #202020;
-        }
     }
 </style>

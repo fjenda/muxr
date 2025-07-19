@@ -2,35 +2,42 @@
   import { DropContainer } from "$components";
 </script>
 
-<div class="main-container">
-    <h1 class="title">Separate your audio tracks into stems</h1>
-    <p class="subtitle">Upload a song and get the stems in seconds</p>
-    <DropContainer />
+<div class="center">
+    <div class="main-container">
+        <span>
+            <h1 class="title">Separate your audio tracks into stems</h1>
+            <p class="subtitle">Upload a song and get the stems in seconds</p>
+        </span>
+        <DropContainer />
+    </div>
 </div>
 
-<style>
+<style lang="scss">
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
     .main-container {
         padding: 4rem 2rem;
         display: flex;
+        gap: 2rem;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        height: 100vh;
-        background-color: var(--bg-color-light);
     }
 
     .title {
         text-align: center;
         color: var(--text-color-light);
         font-size: 2.5rem;
-        margin-bottom: 2rem;
     }
 
     .subtitle {
         text-align: center;
         color: var(--text-color-light);
         font-size: 1.5rem;
-        margin-bottom: 3rem;
     }
 
     @media screen and (max-width: 600px) {
@@ -48,10 +55,6 @@
     }
 
     @media screen and (prefers-color-scheme: dark) {
-        .main-container {
-            background-color: var(--bg-color-dark);
-        }
-
         .title {
             color: var(--text-color-dark);
         }
