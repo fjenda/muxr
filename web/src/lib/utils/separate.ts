@@ -93,10 +93,11 @@ export const pollResult = async (sessionId?: string) => {
       a.href = url;
       a.download = `stems_${processingState.sessionId}.zip`;
       document.body.appendChild(a);
-      trackUrls.downloadZip = () => a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      processingState.status = "Download started";
+      trackUrls.downloadZip = () => {
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
       await decompressZipBlob(blob);
       LoadingActions.hide();
       await goto(`/${processingState.sessionId}`);
