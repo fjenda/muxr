@@ -82,13 +82,13 @@
             }
         }
 
-        @media screen and (prefers-color-scheme: dark) {
-          border: 2px dashed var(--border-color-dark);
-          background-color: var(--element-color-dark);
+        :global(html.dark-mode) & {
+            border: 2px dashed var(--border-color-dark);
+            background-color: var(--element-color-dark);
 
-          &:hover {
-              background-color: var(--bg-color-dark);
-          }
+            &:hover {
+                background-color: var(--bg-color-dark);
+            }
         }
     }
 

@@ -23,10 +23,8 @@
         transition: border-color 0.25s;
         box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
         outline: none;
-    }
 
-    @media (prefers-color-scheme: dark) {
-        input {
+        :global(html.dark-mode) & {
             color: #ffffff;
             background-color: #0f0f0f98;
         }

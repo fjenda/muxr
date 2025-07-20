@@ -57,6 +57,11 @@
         max-height: 90vh;
         overflow: auto;
         animation: scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        :global(html.dark-mode) & {
+            background: var(--element-color-dark);
+            color: var(--text-color-dark);
+        }
     }
 
     @keyframes fade-in {
@@ -67,12 +72,5 @@
     @keyframes scale-in {
         from { transform: scale(0.9); opacity: 0; }
         to { transform: scale(1); opacity: 1; }
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .dialog-container {
-            background: var(--element-color-dark);
-            color: var(--text-color-dark);
-        }
     }
 </style>

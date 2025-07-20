@@ -54,7 +54,7 @@
         }
     }
 
-    @media screen and (prefers-color-scheme: dark) {
+    :global(html.dark-mode) {
         .title {
             color: var(--text-color-dark);
         }

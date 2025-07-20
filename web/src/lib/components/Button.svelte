@@ -44,7 +44,7 @@
       border-color: transparent;
     }
 
-    @media (prefers-color-scheme: dark) {
+    :global(html.dark-mode) & {
       background: rgba(32, 32, 32, 0.2);
       color: var(--text-color-dark);
       border: 1px solid rgba(255, 255, 255, 0.1);

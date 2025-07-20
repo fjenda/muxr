@@ -1,9 +1,31 @@
 <script>
     import { LoadingProvider, DialogProvider } from "$providers";
-    import { faWaveSquare } from "@fortawesome/free-solid-svg-icons";
+    import { faMoon, faSun, faWaveSquare } from '@fortawesome/free-solid-svg-icons'
     import { faGithub } from "@fortawesome/free-brands-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
+    import { Button } from '$components'
     let { children } = $props();
+
+    let isDarkMode = $state(false);
+
+    // system preference
+    const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+    isDarkMode = prefersDarkScheme.matches;
+    updateDarkModeClass();
+
+    prefersDarkScheme.addEventListener('change', (e) => {
+      isDarkMode = e.matches;
+      updateDarkModeClass();
+    });
+
+    function toggleDarkMode() {
+      isDarkMode = !isDarkMode;
+      updateDarkModeClass();
+    }
+
+    function updateDarkModeClass() {
+      document.documentElement.classList.toggle('dark-mode', isDarkMode);
+    }
 </script>
 
 <LoadingProvider>
@@ -21,6 +43,15 @@
                         <a href="https://github.com/fjenda/muxr" target="_blank" rel="noopener noreferrer">
                             <FontAwesomeIcon icon={faGithub} size="1x"/>
                         </a>
+                    </li>
+                    <li>
+                        <Button onClick={toggleDarkMode}>
+                          {#if isDarkMode}
+                            <FontAwesomeIcon icon={faSun} size="1x"/>
+                          {:else}
+                            <FontAwesomeIcon icon={faMoon} size="1x"/>
+                          {/if}
+                        </Button>
                     </li>
                 </ul>
             </nav>

@@ -9,9 +9,9 @@ import { goto } from "$app/navigation";
 import { get } from "svelte/store";
 
 export const separate = async () => {
-  if (!selectedFile) {
+  if (get(selectedFile) === null) {
     console.error("No file selected for separation.");
-    return;
+    return goto("/");
   }
 
   const formData = new FormData();

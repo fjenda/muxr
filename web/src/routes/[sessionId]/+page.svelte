@@ -78,7 +78,7 @@
         }
     }
 
-    @media screen and (prefers-color-scheme: dark) {
+    :global(html.dark-mode) {
         .container {
             background-color: var(--element-color-dark);
         }

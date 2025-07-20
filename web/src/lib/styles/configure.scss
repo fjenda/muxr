@@ -28,7 +28,7 @@ $text-light: var(--text-color-light, #222);
   margin-bottom: 1rem;
   color: $text-light;
 
-  @media (prefers-color-scheme: dark) {
+  :global(html.dark-mode) & {
     color: $text-dark;
   }
 
@@ -63,7 +63,7 @@ $text-light: var(--text-color-light, #222);
     z-index: -1;
     filter: blur(3px);
 
-    @media (prefers-color-scheme: dark) {
+    :global(html.dark-mode) & {
       color: $text-dark;
     }
 
@@ -116,7 +116,7 @@ $text-light: var(--text-color-light, #222);
     color: $text-dark;
   }
 
-  @media (prefers-color-scheme: light) {
+  :global(html):not(.dark-mode) & {
     color: $text-light;
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(0, 0, 0, 0.1);

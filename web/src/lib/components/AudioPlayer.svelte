@@ -576,7 +576,7 @@
         }
     }
 
-    @media screen and (prefers-color-scheme: dark) {
+    :global(html.dark-mode) {
         .controls-box {
             background-color: var(--accent-color-dark);
             border: 1px solid var(--border-color-dark);

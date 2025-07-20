@@ -82,8 +82,7 @@
       }
     }
 
-
-    @media screen and (prefers-color-scheme: light) {
+    :global(html:not(.dark-mode)) & {
       background: rgba(255, 255, 255, 0.15);
       color: $text-light;
       border: 1px solid rgba(0, 0, 0, 0.08);
