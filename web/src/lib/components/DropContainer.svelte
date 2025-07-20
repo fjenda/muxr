@@ -68,6 +68,10 @@
             text-align: center;
         }
 
+        &:hover {
+            background-color: var(--bg-color-light);
+        }
+
         button.file-input-button {
             background-color: var(--accent-color-light);
             color: var(--text-color-light);
@@ -76,10 +80,6 @@
             border-radius: 20px;
             cursor: pointer;
             transition: background-color 0.3s ease;
-
-            &:hover {
-                background-color: var(--bg-color-light);
-            }
         }
 
         :global(html.dark-mode) & {

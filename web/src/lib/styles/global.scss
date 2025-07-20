@@ -97,9 +97,13 @@ html, body {
 }
 
 body {
+  background-image: linear-gradient(to right,rgba(0,0,0,.035) 1px,transparent 1px),linear-gradient(to bottom,rgba(0,0,0,.035) 1px,transparent 1px);
+  background-size: 24px 24px;
+  animation: grid-move 3s linear infinite;
+}
+
+html.dark-mode body {
     background-image: linear-gradient(to right,rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.035) 1px,transparent 1px);
-    background-size: 24px 24px;
-    animation: grid-move 3s linear infinite;
 }
 
 @keyframes grid-move {
