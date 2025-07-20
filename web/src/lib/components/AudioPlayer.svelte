@@ -2,7 +2,15 @@
     import { onMount } from "svelte";
     import { Button } from "$components";
     import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-    import { faForward, faBackward, faPlay, faPause, faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
+    import {
+        faForward,
+        faBackward,
+        faPlay,
+        faPause,
+        faVolumeUp,
+        faVolumeMute,
+        faDownload,
+    } from '@fortawesome/free-solid-svg-icons'
 
     import 'simplebar';
     import 'simplebar-core/dist/simplebar.css';
@@ -308,6 +316,14 @@
                                         <FontAwesomeIcon icon={faVolumeUp} />
                                     {/if}
                                 </Button>
+                                <Button
+                                  small
+                                  class="download-btn"
+                                  onClick={() => trackUrls.downloadTrack(i)}
+                                  aria-label="Download track"
+                                >
+                                    <FontAwesomeIcon icon={faDownload} />
+                                </Button>
                             </div>
                         </div>
                         <input type="range" min="0" max="1" step="0.01"
@@ -331,10 +347,11 @@
                     <div class="cursor-playhead" style="left: {cursorX}px" class:visible={showCursorPlayhead}></div>
                 </div>
             </div>
+            <Button onClick={() => trackUrls.downloadZip()}>Download all stems</Button>
         </div>
     </div>
     <div class="timeline-controls">
-        <div class="range-wrapper controls-box">
+        <div class="zoom-wrapper controls-box">
             <label for="volume">Zoom</label>
             <input id="zoom-range" type="range" min="10" max="500" value="10" oninput={zoom} />
         </div>
@@ -388,6 +405,10 @@
         border-radius: 0.5rem;
         border: 1px solid var(--border-color-light);
     }
+
+    /*.zoom-wrapper {*/
+    /*    display: none;*/
+    /*}*/
 
     .time-wrapper {
         width: fit-content;
@@ -453,6 +474,7 @@
         grid-template-columns: auto 1fr;
         width: fit-content;
         min-width: 100%;
+        gap: 0.5rem;
     }
 
     .track-controls-panel {
@@ -460,7 +482,6 @@
         flex-direction: column;
         padding: 0.5rem 1rem;
         border-radius: 0.5rem;
-        margin-right: 0.5rem;
         background-color: var(--element-color-light);
         z-index: 2;
     }
@@ -492,14 +513,18 @@
         gap: 0.5rem;
     }
 
-    :global(.solo-btn), :global(.mute-btn) {
+    :global(.solo-btn),
+    :global(.mute-btn),
+    :global(.download-btn) {
         width: 32px;
         height: 32px;
         padding: 0 !important;
         display: block !important;
     }
 
-    :global(.solo-btn[data-active="true"]), :global(.mute-btn[data-active="true"]) {
+    :global(.solo-btn[data-active="true"]),
+    :global(.mute-btn[data-active="true"]),
+    :global(.download-btn[data-active="true"]) {
         background-color: #858585;
         color: white;
     }

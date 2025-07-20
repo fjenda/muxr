@@ -41,7 +41,6 @@
      role="region"
 >
     <AudioPlayer barHeight={128} timelineHeight={30} sessionId={sessionId} />
-    <Button onClick={() => trackUrls.downloadZip()}>Download all stems</Button>
 </div>
 
 <style>
