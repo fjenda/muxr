@@ -54,6 +54,7 @@
       opacity: 0.5;
       transition: opacity 0.3s ease;
       z-index: 0;
+      border-radius: $radius;
     }
 
     > * {

@@ -15,12 +15,12 @@
     font-size: 1em;
     font-weight: 500;
     border-radius: 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(200, 200, 200, 0.1);
+    background: rgba(255, 255, 255, 0.8);
     color: var(--text-color-light);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     transition: all 0.2s ease-in-out;
     cursor: pointer;
     outline: none;

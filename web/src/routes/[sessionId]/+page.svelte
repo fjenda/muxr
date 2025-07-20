@@ -5,6 +5,7 @@
 
     import { page } from '$app/state';
     import { selectedFile } from '$stores/selectedFile.svelte'
+    import { goto } from '$app/navigation'
     const sessionId = page.params.sessionId;
 
     const showAlert = (file: File) => {
@@ -17,6 +18,7 @@
             onConfirm: () => {
                 DialogActions.close();
                 selectedFile.set(file);
+                goto('/configure');
             }
         });
     };

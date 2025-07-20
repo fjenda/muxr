@@ -117,21 +117,6 @@
         }
     }
 
-    // TODO: This currently just replaces the one and only track that's in the list.
-    // I will probably keep it like that and allow user to configure what he wants it to split into.
-    // TODO: @bug This also resets the volume
-    // const loadUrl = async (url: string) => {
-    //     if (!player) return;
-    //     const track = {
-    //         id: trackCount,
-    //         draggable: false,
-    //         startPosition: 0,
-    //         url: url,
-    //     };
-    //
-    //     player.addTrack(track);
-    // };
-
     const formatTime = (seconds: number): string => {
         const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
         const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
