@@ -82,25 +82,32 @@
       }
     }
 
-    :global(html:not(.dark-mode)) & {
-      background: rgba(255, 255, 255, 0.15);
-      color: $text-light;
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      :global(html:not(.dark-mode)) & {
+          background: rgba(255, 255, 255, 0.9);
+          color: $text-light;
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 
-      &:hover {
-        background: rgba(255, 255, 255, 0.2);
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
-        border: 1px solid rgba(0, 0, 0, 0.15);
+          &::before {
+              background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(240, 240, 240, 0.2));
+              opacity: 0.6;
+          }
+
+          &:hover {
+              background: rgba(255, 255, 255, 1);
+              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+              border: 1px solid var(--waveform-color, rgba(0, 0, 0, 0.1));
+          }
+
+          &.highlighted {
+              background: linear-gradient(135deg, rgba(240, 240, 240, 0.8), rgba(220, 220, 220, 0.7));
+              border: 1px solid var(--waveform-color, rgba(0, 0, 0, 0.12));
+              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+          }
       }
 
-      &.highlighted {
-        background: rgba(255, 255, 255, 0.25);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-      }
-    }
 
-    @media screen and (max-width: 650px) {
+      @media screen and (max-width: 650px) {
       padding: 1rem;
       gap: 0.5rem;
     }
