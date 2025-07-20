@@ -1,20 +1,21 @@
-import { selectedFile } from '$stores/selectedFile.svelte'
-import { configurationState, FileType } from '$stores/configuration.svelte'
-import { processingState } from '$stores/processingState.svelte'
-import { LoadingActions } from '$providers/loading.svelte'
-import { unzipSync } from 'fflate'
-import { getMimeType } from '$utils/mimetype'
-import { trackUrls } from '$stores/trackUrls.svelte.js'
-import { goto } from '$app/navigation'
+import { selectedFile } from "$stores/selectedFile.svelte";
+import { configurationState, FileType } from "$stores/configuration.svelte";
+import { processingState } from "$stores/processingState.svelte";
+import { LoadingActions } from "$providers/loading.svelte";
+import { unzipSync } from "fflate";
+import { getMimeType } from "$utils/mimetype";
+import { trackUrls } from "$stores/trackUrls.svelte.js";
+import { goto } from "$app/navigation";
+import { get } from "svelte/store";
 
 export const separate = async () => {
-  if (!selectedFile.file) {
+  if (!selectedFile) {
     console.error("No file selected for separation.");
     return;
   }
 
   const formData = new FormData();
-  formData.append("file", selectedFile.file);
+  formData.append("file", get(selectedFile) as File);
   formData.append("model", "htdemucs");
   formData.append("output_format", configurationState.outputFileType as string);
 
@@ -34,6 +35,7 @@ export const separate = async () => {
   });
 
   processingState.status = "Uploading your file...";
+  LoadingActions.show(processingState.status);
   try {
     const res = await fetch("/api/separate", {
       method: "POST",
@@ -61,7 +63,7 @@ export const pollResult = async (sessionId?: string) => {
 
   const interval = setInterval(async () => {
     LoadingActions.show(processingState.status);
-    const res = await fetch(`api/result/${processingState.sessionId}`);
+    const res = await fetch(`/api/result/${processingState.sessionId}`);
     if (res.status === 202) {
       try {
         const body = await res.json();
@@ -69,7 +71,9 @@ export const pollResult = async (sessionId?: string) => {
         processingState.percentage =
           body.progress?.percentage || processingState.percentage;
         processingState.status = `Processing (${processingState.sessionId}) at ${processingState.percentage}%`;
-      } catch { /* empty */ }
+      } catch {
+        /* empty */
+      }
       return;
     }
 
@@ -78,7 +82,7 @@ export const pollResult = async (sessionId?: string) => {
     if (res.status === 404 || res.status === 500) {
       console.error("Session not found, redirecting to home.");
       LoadingActions.hide();
-      goto("/");
+      await goto("/");
       return;
     }
 
@@ -95,6 +99,7 @@ export const pollResult = async (sessionId?: string) => {
       processingState.status = "Download started";
       await decompressZipBlob(blob);
       LoadingActions.hide();
+      await goto(`/${processingState.sessionId}`);
     } else {
       const errData = await res.json();
       processingState.status = `Error: ${errData.message}`;

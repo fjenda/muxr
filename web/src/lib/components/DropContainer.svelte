@@ -1,21 +1,25 @@
 <script lang="ts">
-    import { onDrop, onFileSelect } from "$utils/loadFile";
     import { goto } from "$app/navigation";
     import { faFileImport } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
+    import { selectedFile } from '$stores/selectedFile.svelte'
 
     const onClick = (e: Event) => {
-        onFileSelect(e);
+        const input = e.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (!file) return;
+
+        selectedFile.set(file);
         goto('/configure');
     }
 
-    const handleDrop = async (event: DragEvent) => {
+    const handleDrop = (event: DragEvent) => {
         event.preventDefault();
         if (!event.dataTransfer?.files.length) return;
 
         const file = event.dataTransfer.files[0];
-        await onDrop(file);
-        await goto('/configure');
+        selectedFile.set(file);
+        goto('/configure');
     }
 
     const handleDragOver = (event: DragEvent) => {

@@ -6,8 +6,8 @@ New features:
 - [x] Colorize the waveform links
 - [x] Volume for every track
 - [x] Master volume
-- [ ] Option to download individual stems
-- [ ] Option to download all the stems
+- [x] Option to download individual stems
+- [x] Option to download all the stems
 - [x] Option to change the file format (mp3/fac/wav)
 - [x] move timeline to top
 - [ ] Detect BPM and display it

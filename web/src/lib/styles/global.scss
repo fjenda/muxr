@@ -141,3 +141,7 @@ body {
 .simplebar-scrollbar:hover::before {
   background: rgba(255, 255, 255, 0.9);
 }
+
+.simplebar-content-wrapper {
+  outline: none;
+}

@@ -53,13 +53,13 @@
 
     const backward = () => {
         if (!player) return;
-        player.setTime(player.getCurrentTime() - 5);
+        player.setTime(Math.max(0, player.getCurrentTime() - 5));
         getTime();
     }
 
     const forward = () => {
         if (!player) return;
-        player.setTime(player.getCurrentTime() + 5);
+        player.setTime(Math.min(player.getMaxDuration(), player.getCurrentTime() + 5));
         getTime();
     };
 

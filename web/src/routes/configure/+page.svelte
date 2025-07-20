@@ -4,8 +4,6 @@
     import { Button, Card } from "$components";
     import { configurationState, FileType } from '$stores/configuration.svelte'
     import { separate } from "$utils/separate";
-    import { processingState } from "$stores/processingState.svelte";
-    import { LoadingActions } from "$providers/loading.svelte";
 
     const options = [
         { icon: faMicrophone, title: "Isolate one stem" },
@@ -13,7 +11,6 @@
     ];
 
     let selected = "";
-    // let loading = false
     const handleCardClick = (title: string) => selected = title;
     const selectFileType = (type: FileType) => configurationState.outputFileType = type;
     const continueToNext = async () => {
@@ -23,9 +20,6 @@
         }
 
         await separate();
-        if (processingState.status === "Idle") return;
-        LoadingActions.show(processingState.status);
-        await goto(`/${processingState.sessionId}`);
     };
 </script>
 
@@ -40,27 +34,17 @@
         {/each}
     </div>
     <div id="format-options" role="radiogroup" aria-label="Output format">
-        <button
-          type="button"
-          data-format="mp3"
-          class="format-btn"
-          class:selected={configurationState.outputFileType === FileType.MP3}
-          onclick={() => selectFileType(FileType.MP3)}
-        >MP3</button>
-        <button
-          type="button"
-          data-format="wav"
-          class="format-btn"
-          class:selected={configurationState.outputFileType === FileType.WAV}
-          onclick={() => selectFileType(FileType.WAV)}
-        >WAV</button>
-        <button
-          type="button"
-          data-format="flac"
-          class="format-btn"
-          class:selected={configurationState.outputFileType === FileType.FLAC}
-          onclick={() => selectFileType(FileType.FLAC)}
-        >FLAC</button>
+        {#each Object.values(FileType) as format (format)}
+            <button
+              type="button"
+              data-format={format}
+              class="format-btn"
+              class:selected={configurationState.outputFileType === format}
+              onclick={() => selectFileType(format)}
+            >
+                {format}
+            </button>
+        {/each}
     </div>
     <input type="hidden" name="format" id="format" value="mp3">
 

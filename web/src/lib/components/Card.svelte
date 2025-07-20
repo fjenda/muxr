@@ -4,7 +4,7 @@
     import { getWaveformColor } from "$utils/getWaveformColor";
 
 
-   export let icon: IconDefinition;
+    export let icon: IconDefinition;
     export let title: string;
     export let selected: boolean = false;
     export let onClick: () => void;

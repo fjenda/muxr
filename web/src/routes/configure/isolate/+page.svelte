@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Button, Card } from "$components";
-    import { goto } from "$app/navigation";
+    // import { goto } from "$app/navigation";
     import { faMicrophone, faDrum, faGuitar, faQuestion } from "@fortawesome/free-solid-svg-icons";
     import { configurationState, StemType } from "$stores/configuration.svelte";
     import { separate } from "$utils/separate";
-    import { processingState } from "$stores/processingState.svelte";
-    import { LoadingActions } from "$providers/loading.svelte";
+    // import { processingState } from "$stores/processingState.svelte";
+    // import { LoadingActions } from "$providers/loading.svelte";
 
     const options = [
         { icon: faMicrophone, title: "Vocals" },
@@ -22,9 +22,9 @@
         if (selected) {
             configurationState.pickedStem = selected as StemType;
             await separate();
-            if (processingState.status === "Idle") return;
-            LoadingActions.show(processingState.status);
-            await goto(`/${processingState.sessionId}`);
+            // if (processingState.status === "Idle") return;
+            // LoadingActions.show(processingState.status);
+            // await goto(`/${processingState.sessionId}`);
         }
     }
 </script>

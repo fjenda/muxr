@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { AudioPlayer, Button } from '$components'
+    import { AudioPlayer } from '$components'
     import { DialogActions, type DialogComponent } from "$providers/dialog.svelte";
     import { AlertDialog } from "$dialogs";
-    import { onDrop } from "$utils/loadFile";
 
     import { page } from '$app/state';
-    import { trackUrls } from '$stores/trackUrls.svelte'
+    import { selectedFile } from '$stores/selectedFile.svelte'
     const sessionId = page.params.sessionId;
 
     const showAlert = (file: File) => {
@@ -15,14 +14,14 @@
             onCancel: () => {
                 DialogActions.close();
             },
-            onConfirm: async () => {
+            onConfirm: () => {
                 DialogActions.close();
-                await onDrop(file);
+                selectedFile.set(file);
             }
         });
     };
 
-    const handleDrop = async (event: DragEvent) => {
+    const handleDrop = (event: DragEvent) => {
         event.preventDefault();
         if (!event.dataTransfer?.files.length) return;
 

@@ -1,1 +1,3 @@
-export const selectedFile = $state({ file: null as File | null });
+import { writable } from "svelte/store";
+
+export const selectedFile = writable<File | null>(null);
