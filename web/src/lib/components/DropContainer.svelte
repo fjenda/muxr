@@ -2,14 +2,14 @@
     import { goto } from "$app/navigation";
     import { faFileImport } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-    import { selectedFile } from '$stores/selectedFile.svelte'
+    import { fileState } from '$stores/selectedFile.svelte'
 
     const onClick = (e: Event) => {
         const input = e.target as HTMLInputElement;
         const file = input.files?.[0];
         if (!file) return;
 
-        selectedFile.set(file);
+        fileState.file = file;
         goto('/configure');
     }
 
@@ -17,8 +17,7 @@
         event.preventDefault();
         if (!event.dataTransfer?.files.length) return;
 
-        const file = event.dataTransfer.files[0];
-        selectedFile.set(file);
+        fileState.file = event.dataTransfer.files[0];
         goto('/configure');
     }
 

@@ -1,4 +1,4 @@
-import { selectedFile } from "$stores/selectedFile.svelte";
+import { fileState } from "$stores/selectedFile.svelte";
 import { configurationState, FileType } from "$stores/configuration.svelte";
 import { processingState } from "$stores/processingState.svelte";
 import { LoadingActions } from "$providers/loading.svelte";
@@ -9,13 +9,13 @@ import { goto } from "$app/navigation";
 import { get } from "svelte/store";
 
 export const separate = async () => {
-  if (get(selectedFile) === null) {
+  if (fileState.file === null) {
     console.error("No file selected for separation.");
     return goto("/");
   }
 
   const formData = new FormData();
-  formData.append("file", get(selectedFile) as File);
+  formData.append("file", fileState.file);
   formData.append("model", "htdemucs");
   formData.append("output_format", configurationState.outputFileType as string);
 
@@ -71,6 +71,9 @@ export const pollResult = async (sessionId?: string) => {
         processingState.percentage =
           body.progress?.percentage || processingState.percentage;
         processingState.status = `Processing (${processingState.sessionId}) at ${processingState.percentage}%`;
+        document.title = `${processingState.percentage}% ${
+          fileState.file?.name ? `- ${fileState.file.name} |` : ""
+        } muxr`;
       } catch {
         /* empty */
       }
@@ -83,6 +86,7 @@ export const pollResult = async (sessionId?: string) => {
       console.error("Session not found, redirecting to home.");
       LoadingActions.hide();
       await goto("/");
+      document.title = "muxr";
       return;
     }
 
@@ -100,6 +104,9 @@ export const pollResult = async (sessionId?: string) => {
       };
       await decompressZipBlob(blob);
       LoadingActions.hide();
+      document.title = `${
+        fileState.file?.name ? `${fileState.file.name} |` : ""
+      } muxr`;
       await goto(`/${processingState.sessionId}`);
     } else {
       const errData = await res.json();

@@ -1,5 +1,7 @@
 <script lang="ts">
   import { DropContainer } from "$components";
+
+  document.title = "muxr";
 </script>
 
 <div class="center">
