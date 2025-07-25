@@ -275,9 +275,9 @@
         <div class="waveform-grid">
             <div class="track-controls-panel" style="margin-top: {timelineHeight}px">
                 {#each trackStates as state, i (i)}
-                    <div class="track-control" style="height: {barHeight}px;">
+                    <div class="track-control" style="height: {barHeight - 10}px;">
                         <div class="info-panel">
-                            <p>{state.title}</p>
+                            <p>{state.title.charAt(0).toUpperCase() + state.title.slice(1)}</p>
                             <div class="track-buttons">
                                 <Button
                                         small
@@ -332,7 +332,9 @@
                     <div class="cursor-playhead" style="left: {cursorX}px" class:visible={showCursorPlayhead}></div>
                 </div>
             </div>
-            <Button onClick={() => trackUrls.downloadZip()}>Download all stems</Button>
+            <Button onClick={() => trackUrls.downloadZip()}>
+                <FontAwesomeIcon icon={faDownload} />&nbsp;Download all stems
+            </Button>
         </div>
     </div>
     <div class="timeline-controls">
@@ -385,7 +387,7 @@
         justify-content: center;
         gap: 1rem;
 
-        background-color: var(--element-color-light);
+        background: var(--element-color-light);
         padding: 0.5rem 1rem;
         border-radius: 0.5rem;
         border: 1px solid var(--border-color-light);
@@ -416,6 +418,8 @@
         appearance: none;
         width: 100%;
         background-color: transparent;
+        cursor: pointer;
+        height: 20px;
     }
 
     input[type="range"]::-webkit-slider-runnable-track {
@@ -467,7 +471,7 @@
         flex-direction: column;
         padding: 0.5rem 1rem;
         border-radius: 0.5rem;
-        background-color: var(--element-color-light);
+        /*background-color: var(--element-color-light);*/
         z-index: 2;
     }
 
@@ -476,14 +480,22 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 1rem;
-        padding: 0.5rem;
         border-bottom: 1px solid var(--border-color-light);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        background: linear-gradient(135deg, rgba(32, 32, 32, 0.5), rgba(40, 36, 36, 0.3));
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        padding: 1rem;
+        margin: 5px 0;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
     }
 
-    .track-control:last-child {
-        border-bottom: none;
-    }
+    /*.track-control:last-child {*/
+    /*    border-bottom: none;*/
+    /*}*/
 
     .info-panel {
         display: flex;
@@ -578,8 +590,8 @@
 
     :global(html.dark-mode) {
         .controls-box {
-            background-color: var(--accent-color-dark);
-            border: 1px solid var(--border-color-dark);
+            background: linear-gradient(135deg, rgba(32, 32, 32, 0.5), rgba(40, 36, 36, 0.3));
+            border: 1px solid #2b2b2b;
         }
 
         input[type="range"]::-webkit-slider-thumb {
@@ -597,13 +609,13 @@
         }
 
         .track-controls-panel {
-            background-color: var(--accent-color-dark);
-            border-right-color: var(--border-color-dark);
+            /*background-color: var(--accent-color-dark);*/
+            /*border-right-color: var(--border-color-dark);*/
         }
 
-        .track-control {
-            border-bottom-color: var(--border-color-dark);
-        }
+        /*.track-control {*/
+        /*    border-bottom-color: var(--border-color-dark);*/
+        /*}*/
 
         :global(.solo-btn[data-active="true"]), :global(.mute-btn[data-active="true"]) {
             background-color: var(--accent-color-light);
