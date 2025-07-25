@@ -41,7 +41,7 @@ def parse_human_size(size_str) -> float:
     except ValueError:
         return 0.0
 
-def run_demucs(file_path: Path, output_path: Path, model: str, output_format: str, mp3_rate: int, two_stems: str | None):
+def run_demucs(file_path: Path, output_path: Path, model: str, output_format: str, mp3_bitrate: int, two_stems: str | None):
     cmd = [
         sys.executable, "-m", "demucs.separate",
         "-n", model,
@@ -52,7 +52,7 @@ def run_demucs(file_path: Path, output_path: Path, model: str, output_format: st
     match output_format:
         case "mp3":
             cmd.append("--mp3")
-            cmd.append(f"--mp3-bitrate={mp3_rate}")
+            cmd.append(f"--mp3-bitrate={mp3_bitrate}")
         case "flac":
             cmd.append("--flac")
         case _:
@@ -136,19 +136,21 @@ async def separate_audio(
         background_tasks: BackgroundTasks,
         file: UploadFile = File(...),
         model: str = Form("htdemucs"),
-        mp3: bool = Form(False),
+        output_format: str = Form("mp3"),
         mp3_bitrate: int = Form(320),
         two_stems: str | None = Form(None)
 ):
     session_id = str(uuid.uuid4())
-    input_path = UPLOAD_ROOT / f"{session_id}_{file.filename}"
+    file_path = UPLOAD_ROOT / f"{session_id}_{file.filename}"
     output_path = OUTPUT_ROOT / session_id
     output_path.mkdir(exist_ok=True)
 
-    with input_path.open("wb") as f:
+    with file_path.open("wb") as f:
         shutil.copyfileobj(file.file, f)
 
-    background_tasks.add_task(run_demucs, input_path, output_path, model, mp3, mp3_bitrate, two_stems)
+    # def run_demucs(file_path: Path, output_path: Path, model: str, output_format: str, mp3_rate: int,
+    #                two_stems: str | None):
+        background_tasks.add_task(run_demucs, file_path, output_path, model, output_format, mp3_bitrate, two_stems)
 
     return JSONResponse(
         status_code=202,
