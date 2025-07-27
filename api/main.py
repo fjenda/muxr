@@ -17,6 +17,8 @@ import threading
 import time
 from datetime import datetime, timezone
 
+from yt_dlp import YoutubeDL
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -134,23 +136,34 @@ def run_demucs(file_path: Path, output_path: Path, model: str, output_format: st
 @app.post("/separate")
 async def separate_audio(
         background_tasks: BackgroundTasks,
-        file: UploadFile = File(...),
+        file: UploadFile | None = File(None),
+        url: str | None = Form(None),
         model: str = Form("htdemucs"),
         output_format: str = Form("mp3"),
         mp3_bitrate: int = Form(320),
         two_stems: str | None = Form(None)
 ):
     session_id = str(uuid.uuid4())
-    file_path = UPLOAD_ROOT / f"{session_id}_{file.filename}"
+    file_name = file.filename if file else url.split("?v=")[-1]
+    file_path = UPLOAD_ROOT / f"{session_id}_{file_name}"
     output_path = OUTPUT_ROOT / session_id
     output_path.mkdir(exist_ok=True)
 
-    with file_path.open("wb") as f:
-        shutil.copyfileobj(file.file, f)
+    if url:
+        try:
+            file_path = await download_youtube_audio(url, file_path)
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"status": "error", "message": str(e)}
+            )
+    else:
+        with file_path.open("wb") as f:
+            shutil.copyfileobj(file.file, f)
 
     # def run_demucs(file_path: Path, output_path: Path, model: str, output_format: str, mp3_rate: int,
     #                two_stems: str | None):
-        background_tasks.add_task(run_demucs, file_path, output_path, model, output_format, mp3_bitrate, two_stems)
+    background_tasks.add_task(run_demucs, file_path, output_path, model, output_format, mp3_bitrate, two_stems)
 
     return JSONResponse(
         status_code=202,
@@ -195,6 +208,30 @@ def get_result(session_id: str):
             status_code=500,
             content={"status": "error", "message": "Separation failed."}
         )
+
+async def download_youtube_audio(url: str, output_path: Path) -> Path:
+    output_template = str(output_path.with_suffix(""))
+
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'outtmpl': output_template,
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+        'noplaylist': True,
+    }
+
+    try:
+        with YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+            downloaded_path = Path(ydl.prepare_filename(info)).with_suffix(".mp3")
+            print(f"yt-dlp downloaded to {downloaded_path}")
+            return downloaded_path
+    except Exception as e:
+        raise RuntimeError(f"failed to download audio from YouTube: {str(e)}") from e
+
 
 if __name__ == "__main__":
     import uvicorn

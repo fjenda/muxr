@@ -6,16 +6,19 @@ import { unzipSync } from "fflate";
 import { getMimeType } from "$utils/mimetype";
 import { trackUrls } from "$stores/trackUrls.svelte.js";
 import { goto } from "$app/navigation";
-import { get } from "svelte/store";
 
-export const separate = async () => {
-  if (fileState.file === null) {
+export const separate = async (youtube_url: string | null) => {
+  if (fileState.file === null && !youtube_url) {
     console.error("No file selected for separation.");
     return goto("/");
   }
 
   const formData = new FormData();
-  formData.append("file", fileState.file);
+  if (fileState.file) {
+    formData.append("file", fileState.file);
+  } else if (youtube_url) {
+    formData.append("url", youtube_url);
+  }
   formData.append("model", "htdemucs");
   formData.append("output_format", configurationState.outputFileType as string);
 
@@ -34,8 +37,9 @@ export const separate = async () => {
     console.log(`${key}: ${formData.get(key)}`);
   });
 
-  processingState.status = "Uploading your file...";
+  processingState.status = youtube_url ? "Downloading YouTube audio..." : "Uploading file...";
   LoadingActions.show(processingState.status);
+
   try {
     const res = await fetch("/api/separate", {
       method: "POST",

@@ -4,6 +4,7 @@
     import { Button, Card } from "$components";
     import { configurationState, FileType } from '$stores/configuration.svelte'
     import { separate } from "$utils/separate";
+    import { fileState } from "$stores/selectedFile.svelte";
 
     const options = [
         { icon: faMicrophone, title: "Isolate one stem" },
@@ -19,7 +20,7 @@
             return goto("/configure/isolate");
         }
 
-        await separate();
+        await separate(fileState.url);
     };
 </script>
 
