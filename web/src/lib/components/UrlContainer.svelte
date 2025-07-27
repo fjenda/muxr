@@ -26,6 +26,12 @@
     bind:value={youtubeUrl}
     placeholder="https://www.youtube.com/watch?v=..."
     class="url-input"
+    on:keydown={(e) => {
+      if (e.key === 'Enter') {
+        handleSubmit();
+      }
+    }}
+
   />
   <button class="submit-button" on:click={handleSubmit}>
     Use this link
@@ -34,7 +40,7 @@
 
 <style lang="scss">
   .url-container {
-    border: 2px dashed var(--border-color-light);
+    border: 2px solid var(--border-color-light);
     background-color: var(--element-color-light);
     border-radius: 0.5rem;
     padding: 4rem 2rem;
@@ -50,9 +56,9 @@
     .url-input {
       width: 100%;
       max-width: 400px;
-      padding: 0.5rem;
+      padding: 0.5rem 1rem;
       font-size: 1rem;
-      border-radius: 4px;
+      border-radius: 20px;
       border: 1px solid #ccc;
     }
 
