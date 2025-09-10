@@ -27,7 +27,7 @@
 
     &:hover,
     &:focus-visible {
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.5);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       border-color: rgba(255, 255, 255, 0.2);
     }

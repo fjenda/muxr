@@ -45,7 +45,7 @@
                         </a>
                     </li>
                     <li>
-                        <Button onClick={toggleDarkMode}>
+                        <Button onClick={toggleDarkMode} style="padding: 0.45rem 0.7rem; font-size: 0.8em;">
                           {#if isDarkMode}
                             <FontAwesomeIcon icon={faSun} size="1x"/>
                           {:else}
@@ -74,12 +74,14 @@
         background: #0f0f0f;
         padding: .5rem 0;
         font-size: 1.2rem;
+        border-bottom: 1px solid #333;
     }
     nav ul {
         list-style: none;
         display: flex;
+        align-items: center;
         gap: 1rem;
-        color: white;
+        /*height: 100%;*/
         margin: 0;
         padding: 0 2rem;
     }
@@ -87,5 +89,14 @@
         text-decoration: none;
         color: white;
         font-weight: bold;
+    }
+    :global(html):not(.dark-mode) {
+      nav {
+        background: #edeff8;
+        border-color: #ccc;
+      }
+      nav a {
+        color: #101220;
+      }
     }
 </style>
