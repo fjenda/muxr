@@ -8,21 +8,21 @@
 	import { goto } from '$app/navigation';
 	const sessionId = page.params.sessionId;
 
-    const showAlert = (file: File) => {
-        DialogActions.show(AlertDialog as DialogComponent, {
-            title: "Important notice",
-            message: "Replace the current track? Progress will be lost.",
-            onCancel: () => {
-                DialogActions.close();
-            },
-            onConfirm: () => {
-                DialogActions.close();
-                fileState.file = file;
-                fileState.url = null;
-                goto('/configure');
-            }
-        });
-    };
+	const showAlert = (file: File) => {
+		DialogActions.show(AlertDialog as DialogComponent, {
+			title: 'Important notice',
+			message: 'Replace the current track? Progress will be lost.',
+			onCancel: () => {
+				DialogActions.close();
+			},
+			onConfirm: () => {
+				DialogActions.close();
+				fileState.file = file;
+				fileState.url = null;
+				goto('/configure');
+			}
+		});
+	};
 
 	const handleDrop = (event: DragEvent) => {
 		event.preventDefault();

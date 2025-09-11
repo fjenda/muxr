@@ -9,8 +9,14 @@
 	export let onClick: () => void;
 </script>
 
-<div class="card" class:highlighted={selected} onclick={onClick} onkeydown="{onClick}" role="button" tabindex="0"
-     style={getWaveformColor(title) ? `--waveform-color: ${getWaveformColor(title)}` : undefined}
+<div
+	class="card"
+	class:highlighted={selected}
+	onclick={onClick}
+	onkeydown={onClick}
+	role="button"
+	tabindex="0"
+	style={getWaveformColor(title) ? `--waveform-color: ${getWaveformColor(title)}` : undefined}
 >
 	<div class="icon">
 		<FontAwesomeIcon {icon} size="3x" />
@@ -83,7 +89,6 @@
 
 		:global(html:not(.dark-mode)) & {
 			background: rgba(255, 255, 255, 0.9);
-			color: $text;
 			border: 1px solid rgba(0, 0, 0, 0.08);
 			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 

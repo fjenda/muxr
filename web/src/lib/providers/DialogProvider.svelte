@@ -20,22 +20,15 @@
 
 {@render children()}
 {#if dialogState.open}
-    <div class="dialog-backdrop" role="region" aria-label="Dialog backdrop">
-        <div
-            class="backdrop-click-layer"
-            onclick={handleBackdropClick}
-            aria-hidden="true"
-        ></div>
+	<div class="dialog-backdrop" role="region" aria-label="Dialog backdrop">
+		<div class="backdrop-click-layer" onclick={handleBackdropClick} aria-hidden="true"></div>
 
-        <div class="dialog-container">
-            {#if dialogState.component}
-                <dialogState.component
-                    {...dialogState.props}
-                    close={DialogActions.close}
-                />
-            {/if}
-        </div>
-    </div>
+		<div class="dialog-container">
+			{#if dialogState.component}
+				<dialogState.component {...dialogState.props} close={DialogActions.close} />
+			{/if}
+		</div>
+	</div>
 {/if}
 
 <style>
@@ -54,22 +47,22 @@
 		animation: fade-in 0.3s ease-out;
 	}
 
-    .backdrop-click-layer {
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.7);
-    }
+	.backdrop-click-layer {
+		position: absolute;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.7);
+	}
 
-    .dialog-container {
-        background: var(--color-surface);
-        color: var(--color-text);
-        border-radius: 0.5rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        max-width: 90%;
-        max-height: 90vh;
-        overflow: auto;
-        animation: scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
+	.dialog-container {
+		background: var(--color-surface);
+		color: var(--color-text);
+		border-radius: 0.5rem;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+		max-width: 90%;
+		max-height: 90vh;
+		overflow: auto;
+		animation: scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
 
 	@keyframes fade-in {
 		from {

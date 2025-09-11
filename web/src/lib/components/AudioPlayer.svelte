@@ -633,15 +633,15 @@
 			border: 1px solid #2b2b2b;
 		}
 
-        input[type="range"]::-webkit-slider-thumb {
-            border-color: var(--border-color-dark);
-            background: var(--element-color-dark);
-        }
+		.track-control {
+			background: linear-gradient(135deg, rgba(32, 32, 32, 0.5), rgba(40, 36, 36, 0.3));
+			border: 1px solid rgba(255, 255, 255, 0.08);
+		}
 
-		/*input[type='range']::-webkit-slider-thumb {*/
-		/*	border-color: var(--color-border);*/
-		/*	background: var(--color-surface);*/
-		/*}*/
+		input[type='range']::-webkit-slider-thumb {
+			border-color: var(--color-border);
+			background: var(--color-surface);
+		}
 
 		input[type='range']::-webkit-slider-runnable-track {
 			background: linear-gradient(
