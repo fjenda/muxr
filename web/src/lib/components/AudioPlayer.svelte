@@ -608,15 +608,6 @@
             );
         }
 
-        .track-controls-panel {
-            /*background-color: var(--accent-color-dark);*/
-            /*border-right-color: var(--border-color-dark);*/
-        }
-
-        /*.track-control {*/
-        /*    border-bottom-color: var(--border-color-dark);*/
-        /*}*/
-
         :global(.solo-btn[data-active="true"]), :global(.mute-btn[data-active="true"]) {
             background-color: var(--accent-color-light);
             color: black;

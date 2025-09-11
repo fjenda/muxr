@@ -17,7 +17,8 @@
             },
             onConfirm: () => {
                 DialogActions.close();
-                fileState.set(file);
+                fileState.file = file;
+                fileState.url = null;
                 goto('/configure');
             }
         });

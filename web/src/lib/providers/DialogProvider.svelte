@@ -20,12 +20,18 @@
 
 {@render children()}
 {#if dialogState.open}
-    <div class="dialog-backdrop" onclick={handleBackdropClick} role="region" aria-label="Dialog backdrop">
+    <div class="dialog-backdrop" role="region" aria-label="Dialog backdrop">
+        <div
+            class="backdrop-click-layer"
+            onclick={handleBackdropClick}
+            aria-hidden="true"
+        ></div>
+
         <div class="dialog-container">
             {#if dialogState.component}
                 <dialogState.component
-                        {...dialogState.props}
-                        close={DialogActions.close}
+                    {...dialogState.props}
+                    close={DialogActions.close}
                 />
             {/if}
         </div>
@@ -46,6 +52,12 @@
         z-index: 1000;
         backdrop-filter: blur(3px);
         animation: fade-in 0.3s ease-out;
+    }
+
+    .backdrop-click-layer {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
     }
 
     .dialog-container {

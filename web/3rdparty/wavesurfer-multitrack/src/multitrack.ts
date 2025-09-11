@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Multitrack is a super-plugin for creating a multitrack audio player.
  * Individual tracks are synced and played together.

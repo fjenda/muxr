@@ -21,7 +21,7 @@
     const continueToNext = async () => {
         if (selected) {
             configurationState.pickedStem = selected as StemType;
-            await separate();
+            await separate(null);
             // if (processingState.status === "Idle") return;
             // LoadingActions.show(processingState.status);
             // await goto(`/${processingState.sessionId}`);
