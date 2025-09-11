@@ -1,6 +1,6 @@
 <script>
 	import { LoadingProvider, DialogProvider } from '$providers';
-	import { faLightbulb, faMoon, faSun, faWaveSquare } from '@fortawesome/free-solid-svg-icons';
+	import { faMoon, faSun, faWaveSquare } from '@fortawesome/free-solid-svg-icons';
 	import { faGithub } from '@fortawesome/free-brands-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { Button } from '$components';
