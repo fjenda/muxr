@@ -2,143 +2,141 @@ $gap-lg: 1rem;
 $gap-sm: 0.5rem;
 $padding-lg: 2rem;
 $padding-sm: 1rem;
-$text-dark: var(--text-color-dark);
-$text-light: var(--text-color-light, #222);
+$text: var(--color-text);
 
 .card-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(250px, 1fr));
-  max-width: 1200px;
-  margin: 0 auto;
-  gap: $gap-lg;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(250px, 1fr));
+	max-width: 1200px;
+	margin: 0 auto;
+	gap: $gap-lg;
 
-  @media screen and (max-width: 1200px) {
-    grid-template-columns: repeat(1, minmax(250px, 1fr));
-  }
+	@media screen and (max-width: 600px) {
+		grid-template-columns: repeat(1, minmax(250px, 1fr));
+	}
 
-  @media screen and (max-width: 650px) {
-    gap: $gap-sm;
-    padding: $gap-sm;
-  }
+	@media screen and (max-width: 650px) {
+		gap: $gap-sm;
+		padding: $gap-sm;
+	}
 }
 
 .title {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  color: $text-light;
+	text-align: center;
+	font-size: 2rem;
+	margin-bottom: 1rem;
+	color: $text;
 
-  :global(html.dark-mode) & {
-    color: $text-dark;
-  }
+	:global(html.dark-mode) & {
+		color: $text;
+	}
 
-  @media (max-width: 1200px), (max-width: 650px) {
-    font-size: 1.5rem;
-  }
+	@media (max-width: 1200px), (max-width: 650px) {
+		font-size: 1.5rem;
+	}
 }
 
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-  position: relative;
-  padding: $padding-lg;
-  z-index: 0;
-  gap: 1rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1;
+	position: relative;
+	padding: $padding-lg;
+	z-index: 0;
+	gap: 1rem;
 
-  &::before {
-    content: "muxr";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0.08;
-    font-size: 12.5rem;
-    font-weight: bold;
-    color: $text-light;
-    pointer-events: none;
-    user-select: none;
-    z-index: -1;
-    filter: blur(3px);
+	&::before {
+		content: 'muxr';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		opacity: 0.08;
+		font-size: 12.5rem;
+		font-weight: bold;
+		color: $text;
+		pointer-events: none;
+		user-select: none;
+		z-index: -1;
+		filter: blur(3px);
 
-    :global(html.dark-mode) & {
-      color: $text-dark;
-    }
+		:global(html.dark-mode) & {
+			color: $text;
+		}
 
-    @media (max-width: 650px) {
-      font-size: 8rem;
-    }
-  }
+		@media (max-width: 650px) {
+			font-size: 8rem;
+		}
+	}
 
-  @media (max-width: 1200px) {
-    padding: $padding-sm;
-  }
+	@media (max-width: 1200px) {
+		padding: $padding-sm;
+	}
 }
 
-.button-container  {
-  display: flex;
-  justify-content: center;
+.button-container {
+	display: flex;
+	justify-content: center;
 }
-
 
 #format-options {
-  display: flex;
-  gap: $gap-sm;
+	display: flex;
+	gap: $gap-sm;
 }
 
 .format-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: var(--text-color-dark);
-  background: linear-gradient(135deg, rgba(24, 24, 24, 0.6), rgba(32, 28, 28, 0.4));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	font-weight: 500;
+	font-size: 0.95rem;
+	cursor: pointer;
+	transition: all 0.2s ease-in-out;
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	color: var(--text-color-dark);
+	background: linear-gradient(135deg, rgba(24, 24, 24, 0.6), rgba(32, 28, 28, 0.4));
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 
-  &:hover,
-  &:focus-visible {
-    background: linear-gradient(135deg, rgba(32, 32, 32, 0.6), rgba(40, 36, 36, 0.4));
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-    border-color: rgba(255, 255, 255, 0.15);
-  }
+	&:hover,
+	&:focus-visible {
+		background: linear-gradient(135deg, rgba(32, 32, 32, 0.6), rgba(40, 36, 36, 0.4));
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+		border-color: rgba(255, 255, 255, 0.15);
+	}
 
-  &.selected {
-    background: linear-gradient(135deg, rgb(69 69 69 / 40%), rgba(45, 40, 40, 0.3));
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.25);
-    color: $text-dark;
-  }
+	&.selected {
+		background: linear-gradient(135deg, rgb(69 69 69 / 40%), rgba(45, 40, 40, 0.3));
+		box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+		border-color: rgba(255, 255, 255, 0.25);
+		color: $text;
+	}
 
-  :global(html):not(.dark-mode) & {
-    color: $text-light;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	:global(html):not(.dark-mode) & {
+		color: $text;
+		background: rgba(255, 255, 255, 0.15);
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
-    &:hover,
-    &:focus-visible {
-      background: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-      border-color: rgba(0, 0, 0, 0.2);
-    }
+		&:hover,
+		&:focus-visible {
+			background: rgba(255, 255, 255, 0.2);
+			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+			border-color: rgba(0, 0, 0, 0.2);
+		}
 
-    &.selected {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(0, 0, 0, 0.25);
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-      color: $text-light;
-    }
-  }
+		&.selected {
+			background: rgba(255, 255, 255, 0.25);
+			border-color: rgba(0, 0, 0, 0.25);
+			box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+			color: $text;
+		}
+	}
 
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
+	&:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
 }

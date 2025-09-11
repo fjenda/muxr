@@ -1,80 +1,76 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { faLink } from "@fortawesome/free-solid-svg-icons";
-  import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-  import { fileState } from '$stores/selectedFile.svelte';
+	import { goto } from '$app/navigation';
+	import { faLink } from '@fortawesome/free-solid-svg-icons';
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { fileState } from '$stores/selectedFile.svelte';
 
-  let youtubeUrl = "";
+	let youtubeUrl = '';
 
-  const handleSubmit = () => {
-    if (!youtubeUrl.trim()) return;
-    fileState.url = youtubeUrl.trim();
-    fileState.file = null;
-    goto("/configure");
-  };
-
+	const handleSubmit = () => {
+		if (!youtubeUrl.trim()) return;
+		fileState.url = youtubeUrl.trim();
+		fileState.file = null;
+		goto('/configure');
+	};
 </script>
 
 <div class="url-container">
-  <FontAwesomeIcon icon={faLink} size="4x" />
-  <span>
-    <h2>Paste a YouTube URL</h2>
-    <p>We'll download and process it for you.</p>
-  </span>
-  <input
-    type="text"
-    bind:value={youtubeUrl}
-    placeholder="https://www.youtube.com/watch?v=..."
-    class="url-input"
-    on:keydown={(e) => {
-      if (e.key === 'Enter') {
-        handleSubmit();
-      }
-    }}
-
-  />
-  <button class="submit-button" on:click={handleSubmit}>
-    Use this link
-  </button>
+	<FontAwesomeIcon icon={faLink} size="4x" />
+	<div class="header">
+		<h2>Paste a YouTube URL</h2>
+		<p>We'll download and process it for you.</p>
+	</div>
+	<input
+		type="text"
+		bind:value={youtubeUrl}
+		placeholder="https://www.youtube.com/watch?v=..."
+		class="url-input"
+		on:keydown={(e) => {
+			if (e.key === 'Enter') {
+				handleSubmit();
+			}
+		}}
+	/>
+	<button class="submit-button" on:click={handleSubmit}> Use this link </button>
 </div>
 
 <style lang="scss">
-  .url-container {
-    border: 2px solid var(--border-color-light);
-    background-color: var(--element-color-light);
-    border-radius: 0.5rem;
-    padding: 4rem 2rem;
-    width: 100%;
-    max-width: 600px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    transition: background-color 0.3s ease;
+	.header {
+		text-align: center;
+	}
 
-    .url-input {
-      width: 100%;
-      max-width: 400px;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      border-radius: 20px;
-      border: 1px solid #ccc;
-    }
+	.url-container {
+		border-radius: 0.5rem;
+		padding: 6rem 2rem;
+		width: 100%;
+		max-width: 600px;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		flex-grow: 1;
+		justify-content: center;
+		align-items: center;
+		transition: background-color 0.3s ease;
+		border: 1px solid var(--color-border);
+		background-color: var(--color-surface);
+		text-align: center;
 
-    .submit-button {
-      background-color: var(--accent-color-light);
-      color: var(--text-color-light);
-      border: none;
-      padding: 0.5rem 1.5rem;
-      border-radius: 20px;
-      cursor: pointer;
-    }
+		.url-input {
+			width: 100%;
+			max-width: 400px;
+			padding: 0.5rem 1rem;
+			font-size: 1rem;
+			border-radius: 20px;
+			border: 1px solid #ccc;
+		}
 
-    :global(html.dark-mode) & {
-      border-color: var(--border-color-dark);
-      background-color: var(--element-color-dark);
-    }
-  }
+		.submit-button {
+			background-color: var(--color-accent);
+			color: var(--color-text);
+			border: none;
+			padding: 0.5rem 1.5rem;
+			border-radius: 20px;
+			cursor: pointer;
+		}
+	}
 </style>

@@ -1,6 +1,6 @@
 <script lang="ts">
-    import {LoadingIndicator} from "$components";
+	import { LoadingIndicator } from '$components';
 </script>
 
-<slot/>
-<LoadingIndicator/>
+<slot />
+<LoadingIndicator />
