@@ -10,7 +10,8 @@ It splits your track and displays the result in a timeline with audio waveforms 
 - Concurrent job handling with timeouts
 - Docker-friendly and lightweight
 
----
+### Screenshot
+![image](.github/screenshot.png)
 
 ### Requirements
 - python 3.11

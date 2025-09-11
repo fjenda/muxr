@@ -9,13 +9,8 @@
 	export let onClick: () => void;
 </script>
 
-<div
-	class="card"
-	class:highlighted={selected}
-	onclick={onClick}
-	role="button"
-	tabindex="0"
-	style={getWaveformColor(title) ? `--waveform-color: ${getWaveformColor(title)}` : undefined}
+<div class="card" class:highlighted={selected} onclick={onClick} onkeydown="{onClick}" role="button" tabindex="0"
+     style={getWaveformColor(title) ? `--waveform-color: ${getWaveformColor(title)}` : undefined}
 >
 	<div class="icon">
 		<FontAwesomeIcon {icon} size="3x" />

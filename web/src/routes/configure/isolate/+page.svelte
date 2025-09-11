@@ -16,17 +16,17 @@
 		// { icon: faGuitar, title: "Guitar" },
 	];
 
-	let selected = '';
-	const handleCardClick = (title: string) => (selected = title);
-	const continueToNext = async () => {
-		if (selected) {
-			configurationState.pickedStem = selected as StemType;
-			await separate();
-			// if (processingState.status === "Idle") return;
-			// LoadingActions.show(processingState.status);
-			// await goto(`/${processingState.sessionId}`);
-		}
-	};
+    let selected = "";
+    const handleCardClick = (title: string) => selected = title;
+    const continueToNext = async () => {
+        if (selected) {
+            configurationState.pickedStem = selected as StemType;
+            await separate(null);
+            // if (processingState.status === "Idle") return;
+            // LoadingActions.show(processingState.status);
+            // await goto(`/${processingState.sessionId}`);
+        }
+    }
 </script>
 
 <div class="container">
