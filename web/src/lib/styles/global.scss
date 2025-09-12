@@ -83,7 +83,7 @@ h6 {
 	--color-surface: #f9f9f9;
 	--color-border: #c6c6c6;
 	--color-accent: #e0e0e0;
-    --color-hover: #eaeaea;
+	--color-hover: #eaeaea;
 
 	font-family: var(--font-base), sans-serif;
 	font-size: 16px;
@@ -124,7 +124,7 @@ html.dark-mode {
 	--color-surface: #121212;
 	--color-border: #5f5f5f;
 	--color-accent: #2c2c2c;
-    --color-hover: #1e1e1e;
+	--color-hover: #1e1e1e;
 
 	background-color: var(--color-bg);
 	color: var(--color-text);
