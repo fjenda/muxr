@@ -64,7 +64,7 @@
 		}
 
 		&:hover {
-			background-color: var(--color-border);
+			background-color: var(--color-hover);
 		}
 
 		button.file-input-button {

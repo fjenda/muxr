@@ -558,11 +558,14 @@
 		display: block !important;
 	}
 
-	:global(.solo-btn[data-active='true']),
-	:global(.mute-btn[data-active='true']),
-	:global(.download-btn[data-active='true']) {
-		background-color: var(--color-accent);
-		color: var(--color-text);
+	:global(.solo-btn[data-active='true']) {
+		background-color: #f16314;
+		color: #fff;
+	}
+
+	:global(.mute-btn[data-active='true']) {
+		background-color: #ff4c4c;
+		color: #fff;
 	}
 
 	.waveform-container-wrapper {
@@ -652,10 +655,14 @@
 			);
 		}
 
-		:global(.solo-btn[data-active='true']),
+		:global(.solo-btn[data-active='true']) {
+			background-color: #f16314;
+			color: #fff;
+		}
+
 		:global(.mute-btn[data-active='true']) {
-			background-color: var(--color-accent);
-			color: white;
+			background-color: #dd3b3b;
+			color: #fff;
 		}
 	}
 </style>
