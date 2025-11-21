@@ -6,6 +6,10 @@
 	import { separate } from '$utils/separate';
 	import { fileState } from '$stores/selectedFile.svelte';
 
+    if (!fileState.file || !fileState.url) {
+		goto('/');
+	}
+
 	const options = [
 		{ icon: faMicrophone, title: 'Isolate one stem' },
 		{ icon: faDrum, title: 'Split the song into all audible stems' }
