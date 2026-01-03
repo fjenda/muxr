@@ -48,5 +48,5 @@ npm run dev
 ### Docker Deployment
 You can simply run the app using Docker Compose. This will build the Docker images and start the services.
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
