@@ -121,10 +121,13 @@ async function decompressZipBlob(blob: Blob) {
 
 		trackUrls.clear(); // clear previous URLs
 		for (const [filename, data] of Object.entries(extracted)) {
-			const title = filename.split('.').slice(0, -1).join('.'); // remove extension
+			const title = filename.split('.').slice(0, -1).join('.');
 			const type = getMimeType(filename);
-			const fileBlob = new Blob([data], { type });
+
+			const arrayBuffer = new Uint8Array(data).buffer;
+			const fileBlob = new Blob([arrayBuffer], { type });
 			const url = URL.createObjectURL(fileBlob);
+
 			trackUrls.addUrl({ title, url });
 		}
 

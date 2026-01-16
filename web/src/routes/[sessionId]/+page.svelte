@@ -8,6 +8,10 @@
 	import { goto } from '$app/navigation';
 	const sessionId = page.params.sessionId;
 
+	if (!sessionId) {
+		throw new Error('sessionId missing');
+	}
+
 	const showAlert = (file: File) => {
 		DialogActions.show(AlertDialog as DialogComponent, {
 			title: 'Important notice',
