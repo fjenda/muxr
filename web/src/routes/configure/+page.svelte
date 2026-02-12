@@ -6,7 +6,7 @@
 	import { separate } from '$utils/separate';
 	import { fileState } from '$stores/selectedFile.svelte';
 
-	if (!fileState.file || !fileState.url) {
+	if (!fileState.file && !fileState.url) {
 		goto('/');
 	}
 
