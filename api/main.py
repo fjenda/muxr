@@ -34,6 +34,33 @@ OUTPUT_ROOT = BASE_DIR / "outputs"
 UPLOAD_ROOT.mkdir(exist_ok=True)
 OUTPUT_ROOT.mkdir(exist_ok=True)
 
+MODELS = {"htdemucs", "htdemucs_ft", "htdemucs_6s", "hdemucs_mmi", "mdx", "mdx_extra", "mdx_q", "mdx_extra_q"}
+OUTPUT_FORMATS = {"mp3", "wav", "flac"}
+STEMS = {"vocals", "drums", "bass", "other"}
+STEMS_6S = STEMS | {"guitar", "piano"}
+
+def write_status(output_path: Path, success: bool, message: str = ""):
+    if message:
+        (output_path / "error.txt").write_text(message)
+    (output_path / "status.txt").write_text("success" if success else "error")
+
+def convert_to_wav(src: Path, dst: Path):
+    # normalize whatever ffmpeg can decode (any codec/container, video files, mono, surround,
+    # odd sample rates) into the 44.1kHz stereo PCM that demucs expects
+    cmd = [
+        "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+        "-i", str(src),
+        "-map", "0:a:0", "-vn", "-sn", "-dn",
+        "-ac", "2", "-ar", "44100", "-c:a", "pcm_s16le",
+        str(dst),
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0 or not dst.exists() or dst.stat().st_size == 0:
+        detail = result.stderr.strip().splitlines()[-1] if result.stderr.strip() else "unknown error"
+        if "matches no streams" in result.stderr:
+            detail = "file contains no audio stream"
+        raise RuntimeError(f"could not decode audio: {detail}")
+
 def parse_human_size(size_str) -> float:
     units = {'K': 1e3, 'M': 1e6, 'G': 1e9}
     try:
@@ -47,7 +74,7 @@ def run_demucs(file_path: Path, output_path: Path, model: str, output_format: st
     cmd = [
         sys.executable, "-m", "demucs.separate",
         "-n", model,
-        "-j", str(os.cpu_count() // 2 or 4),
+        "-j", str(max(1, (os.cpu_count() or 2) // 2)),
         "-o", str(output_path),
     ]
 
@@ -72,7 +99,8 @@ def run_demucs(file_path: Path, output_path: Path, model: str, output_format: st
 
     print(cmd)
 
-    process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+    process = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, text=True)
+    log_lines = []
 
     def poll_watcher(proc):
         while proc.poll() is None:
@@ -89,10 +117,11 @@ def run_demucs(file_path: Path, output_path: Path, model: str, output_format: st
 
     threading.Thread(target=poll_watcher, args=(process,), daemon=True).start()
 
-    for line in process.stderr:
+    for line in process.stdout:
         line = line.strip()
         if not line:
             continue
+        log_lines.append(line)
         # print(line)
         if "%" in line and "|" in line and "/" in line:
             try:
@@ -119,18 +148,48 @@ def run_demucs(file_path: Path, output_path: Path, model: str, output_format: st
         progress_file.write_text(json.dumps({"type": "info", "message": line}))
 
     process.wait()
-    success = process.returncode == 0
+    (output_path / "log.txt").write_text("\n".join(log_lines))
 
-    (output_path / "status.txt").write_text("success" if success else "error")
-    (output_path / "log.txt").write_text(process.stdout.read() + process.stderr.read())
+    if process.returncode != 0:
+        tail = next((l for l in reversed(log_lines) if "Error" in l), log_lines[-1] if log_lines else "")
+        raise RuntimeError(f"separation failed: {tail}" if tail else "separation failed")
 
-    if success:
-        stems_dir = output_path / model / file_path.stem
-        if stems_dir.exists():
-            zip_path = output_path / "result.zip"
-            with zipfile.ZipFile(zip_path, "w") as zipf:
-                for stem_file in stems_dir.glob("*"):
-                    zipf.write(stem_file, arcname=stem_file.name)
+    stems_dir = output_path / model / file_path.stem
+    stem_files = sorted(stems_dir.glob("*")) if stems_dir.exists() else []
+    if not stem_files:
+        raise RuntimeError("separation produced no output")
+
+    # write to a temp name first so the poller never serves a half-written zip
+    tmp_zip = output_path / "result.zip.part"
+    with zipfile.ZipFile(tmp_zip, "w") as zipf:
+        for stem_file in stem_files:
+            zipf.write(stem_file, arcname=stem_file.name)
+    tmp_zip.rename(output_path / "result.zip")
+
+
+def process_job(source: Path | None, url: str | None, output_path: Path, model: str, output_format: str,
+                mp3_bitrate: int, two_stems: str | None):
+    progress_file = output_path / "progress.json"
+    try:
+        if url:
+            progress_file.write_text(json.dumps({"type": "info", "message": "Downloading audio"}))
+            source = download_youtube_audio(url, output_path / "download")
+
+        progress_file.write_text(json.dumps({"type": "info", "message": "Decoding audio"}))
+        wav_path = output_path / "input.wav"
+        convert_to_wav(source, wav_path)
+
+        run_demucs(wav_path, output_path, model, output_format, mp3_bitrate, two_stems)
+        write_status(output_path, True)
+    except Exception as e:
+        print(f"[{output_path.name}] job failed: {e}")
+        write_status(output_path, False, str(e))
+    finally:
+        # drop intermediates, keep only the results
+        if source and source.exists() and UPLOAD_ROOT in source.parents:
+            source.unlink(missing_ok=True)
+        shutil.rmtree(output_path / "download", ignore_errors=True)
+        (output_path / "input.wav").unlink(missing_ok=True)
 
 
 @app.post("/separate")
@@ -143,27 +202,36 @@ async def separate_audio(
         mp3_bitrate: int = Form(320),
         two_stems: str | None = Form(None)
 ):
+    url = url.strip() if url else None
+    if not file and not url:
+        return JSONResponse(status_code=400, content={"status": "error", "message": "No file or URL provided."})
+    if model not in MODELS:
+        return JSONResponse(status_code=400, content={"status": "error", "message": f"Unknown model: {model}"})
+    if output_format not in OUTPUT_FORMATS:
+        return JSONResponse(status_code=400, content={"status": "error", "message": f"Unsupported output format: {output_format}"})
+    two_stems = two_stems.strip().lower() if two_stems and two_stems.strip() else None
+    if two_stems and two_stems not in (STEMS_6S if model == "htdemucs_6s" else STEMS):
+        return JSONResponse(status_code=400, content={"status": "error", "message": f"Unsupported stem: {two_stems}"})
+
     session_id = str(uuid.uuid4())
-    file_name = file.filename if file else url.split("?v=")[-1]
-    file_path = UPLOAD_ROOT / f"{session_id}_{file_name}"
     output_path = OUTPUT_ROOT / session_id
     output_path.mkdir(exist_ok=True)
+    # the poll watcher only starts once demucs runs; seed the poll file for the download/decode phase
+    (output_path / "last_poll.txt").write_text(datetime.now(timezone.utc).isoformat())
+    (output_path / "progress.json").write_text(json.dumps({"type": "start", "percentage": 0}))
 
-    if url:
-        try:
-            file_path = await download_youtube_audio(url, file_path)
-        except Exception as e:
-            return JSONResponse(
-                status_code=500,
-                content={"status": "error", "message": str(e)}
-            )
-    else:
+    file_path = None
+    if file:
+        # never trust the client filename for paths, only keep a sane extension
+        suffix = Path(file.filename or "").suffix.lower()
+        if not suffix.isascii() or not suffix[1:].isalnum():
+            suffix = ""
+        file_path = UPLOAD_ROOT / f"{session_id}{suffix}"
         with file_path.open("wb") as f:
             shutil.copyfileobj(file.file, f)
+        url = None
 
-    # def run_demucs(file_path: Path, output_path: Path, model: str, output_format: str, mp3_rate: int,
-    #                two_stems: str | None):
-    background_tasks.add_task(run_demucs, file_path, output_path, model, output_format, mp3_bitrate, two_stems)
+    background_tasks.add_task(process_job, file_path, url, output_path, model, output_format, mp3_bitrate, two_stems)
 
     return JSONResponse(
         status_code=202,
@@ -204,34 +272,45 @@ def get_result(session_id: str):
             filename=f"stems_{session_id}.zip"
         )
     else:
+        error_file = output_path / "error.txt"
+        message = error_file.read_text() if error_file.exists() else "Separation failed."
         return JSONResponse(
             status_code=500,
-            content={"status": "error", "message": "Separation failed."}
+            content={"status": "error", "message": message}
         )
 
-async def download_youtube_audio(url: str, output_path: Path) -> Path:
-    output_template = str(output_path.with_suffix(""))
+def download_youtube_audio(url: str, download_dir: Path) -> Path:
+    download_dir.mkdir(parents=True, exist_ok=True)
 
     ydl_opts = {
+        # prefer audio-only streams, fall back to a muxed stream; audio is extracted by convert_to_wav
         'format': 'bestaudio/best',
-        'outtmpl': output_template,
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
+        'outtmpl': str(download_dir / "%(id)s.%(ext)s"),
+        'restrictfilenames': True,
         'noplaylist': True,
+        'quiet': True,
+        'no_warnings': True,
+        'retries': 5,
+        'fragment_retries': 5,
     }
 
     try:
         with YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
-            downloaded_path = Path(ydl.prepare_filename(info)).with_suffix(".mp3")
-            print(f"yt-dlp downloaded to {downloaded_path}")
-            return downloaded_path
+            if info.get("_type") == "playlist":
+                entries = [e for e in info.get("entries") or [] if e]
+                if not entries:
+                    raise RuntimeError("playlist is empty")
+                info = entries[0]
+            downloads = info.get("requested_downloads") or []
+            downloaded_path = Path(downloads[0]["filepath"]) if downloads else Path(ydl.prepare_filename(info))
     except Exception as e:
-        raise RuntimeError(f"failed to download audio from YouTube: {str(e)}") from e
+        raise RuntimeError(f"failed to download audio: {e}") from e
 
+    if not downloaded_path.exists():
+        raise RuntimeError("failed to download audio: downloaded file not found")
+    print(f"yt-dlp downloaded to {downloaded_path}")
+    return downloaded_path
 
 if __name__ == "__main__":
     import uvicorn
