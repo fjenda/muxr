@@ -4,6 +4,7 @@
 	import { faMicrophone, faDrum, faGuitar, faQuestion } from '@fortawesome/free-solid-svg-icons';
 	import { configurationState, StemType } from '$stores/configuration.svelte';
 	import { separate } from '$utils/separate';
+	import { fileState } from '$stores/selectedFile.svelte';
 	// import { processingState } from "$stores/processingState.svelte";
 	// import { LoadingActions } from "$providers/loading.svelte";
 
@@ -21,7 +22,7 @@
 	const continueToNext = async () => {
 		if (selected) {
 			configurationState.pickedStem = selected as StemType;
-			await separate(null);
+			await separate(fileState.url);
 			// if (processingState.status === "Idle") return;
 			// LoadingActions.show(processingState.status);
 			// await goto(`/${processingState.sessionId}`);

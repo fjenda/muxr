@@ -24,6 +24,9 @@
 			return goto('/configure/isolate');
 		}
 
+		configurationState.twoStems = false;
+		configurationState.pickedStem = null;
+
 		await separate(fileState.url);
 	};
 </script>

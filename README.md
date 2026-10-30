@@ -16,6 +16,7 @@ It splits your track and displays the result in a timeline with audio waveforms 
 ### Requirements
 - python 3.11
 - `ffmpeg` installed and in `PATH`
+- [`deno`](https://deno.com) (or another JS runtime supported by yt-dlp) in `PATH`, required for YouTube downloads
 - docker (optional, for containerized deployment)
 
 ---

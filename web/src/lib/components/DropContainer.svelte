@@ -10,6 +10,7 @@
 		if (!file) return;
 
 		fileState.file = file;
+		fileState.url = null;
 		goto('/configure');
 	};
 
@@ -18,6 +19,7 @@
 		if (!event.dataTransfer?.files.length) return;
 
 		fileState.file = event.dataTransfer.files[0];
+		fileState.url = null;
 		goto('/configure');
 	};
 
@@ -35,7 +37,13 @@
 	<button class="file-input-button" onclick={() => document.getElementById('audio-file')?.click()}>
 		<span>Select File</span>
 	</button>
-	<input id="audio-file" type="file" accept="audio/*" class="file-input" onchange={onClick} />
+	<input
+		id="audio-file"
+		type="file"
+		accept="audio/*,video/*"
+		class="file-input"
+		onchange={onClick}
+	/>
 </div>
 
 <style lang="scss">
