@@ -6,6 +6,28 @@ import { unzipSync } from 'fflate';
 import { getMimeType } from '$utils/mimetype';
 import { trackUrls } from '$stores/trackUrls.svelte.js';
 import { goto } from '$app/navigation';
+import { DialogActions, type DialogComponent } from '$providers/dialog.svelte';
+import { AlertDialog } from '$dialogs';
+
+const showError = (message: string) => {
+	LoadingActions.hide();
+	document.title = 'muxr';
+	DialogActions.show(AlertDialog as DialogComponent, {
+		title: 'Processing failed',
+		message,
+		onConfirm: () => DialogActions.close(),
+		onCancel: () => DialogActions.close()
+	});
+};
+
+const readErrorMessage = async (res: Response, fallback: string) => {
+	try {
+		const body = await res.json();
+		return body?.message || fallback;
+	} catch {
+		return fallback;
+	}
+};
 
 export const separate = async (youtube_url: string | null) => {
 	if (fileState.file === null && !youtube_url) {
@@ -41,13 +63,21 @@ export const separate = async (youtube_url: string | null) => {
 			method: 'POST',
 			body: formData
 		});
+		if (!res.ok) {
+			const message = await readErrorMessage(res, `Upload failed (${res.status})`);
+			processingState.status = `Error: ${message}`;
+			await goto('/');
+			return showError(message);
+		}
 		const data = await res.json();
 		processingState.sessionId = data.session_id;
-		processingState.status = 'Separating...';
+		processingState.status = youtube_url ? 'Downloading YouTube audio...' : 'Separating...';
 		await pollResult();
 	} catch (err) {
 		console.error('Upload error:', err);
 		processingState.status = 'Upload failed';
+		await goto('/');
+		showError('Upload failed. Is the server running?');
 	}
 };
 
@@ -61,55 +91,75 @@ export const pollResult = async (sessionId?: string) => {
 
 	processingState.percentage = 0;
 
+	let busy = false;
 	const interval = setInterval(async () => {
-		LoadingActions.show(processingState.status);
-		const res = await fetch(`/api/result/${processingState.sessionId}`);
-		if (res.status === 202) {
-			try {
-				const body = await res.json();
-				console.log(body);
-				processingState.percentage = body.progress?.percentage || processingState.percentage;
-				processingState.status = `Processing (${processingState.sessionId}) at ${processingState.percentage}%`;
-				document.title = `${processingState.percentage}% ${
-					fileState.file?.name ? `- ${fileState.file.name} |` : ''
-				} muxr`;
-			} catch {
-				/* empty */
-			}
-			return;
-		}
-
-		LoadingActions.show(processingState.status);
-		clearInterval(interval);
-		if (res.status === 404 || res.status === 500) {
-			console.error('Session not found, redirecting to home.');
-			LoadingActions.hide();
-			await goto('/');
-			document.title = 'muxr';
-			return;
-		}
-
-		if (res.ok) {
-			const blob = await res.blob();
-			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = `stems_${processingState.sessionId}.zip`;
-			document.body.appendChild(a);
-			trackUrls.downloadZip = () => {
-				a.click();
-				document.body.removeChild(a);
-				URL.revokeObjectURL(url);
-			};
-			await decompressZipBlob(blob);
-			LoadingActions.hide();
-			document.title = `${fileState.file?.name ? `${fileState.file.name} |` : ''} muxr`;
-			await goto(`/${processingState.sessionId}`);
-		} else {
-			const errData = await res.json();
-			processingState.status = `Error: ${errData.message}`;
+		// skip ticks while a previous request is still in flight
+		if (busy) return;
+		busy = true;
+		try {
+			await pollOnce(interval);
+		} catch (err) {
+			console.error('Polling error:', err);
+		} finally {
+			busy = false;
 		}
 	}, 2000);
+};
+
+const pollOnce = async (interval: ReturnType<typeof setInterval>) => {
+	LoadingActions.show(processingState.status);
+	const res = await fetch(`/api/result/${processingState.sessionId}`);
+	if (res.status === 202) {
+		try {
+			const body = await res.json();
+			console.log(body);
+			const progress = body.progress ?? {};
+			if (progress.type === 'info' && progress.message && !progress.percentage) {
+				processingState.status = `${progress.message}...`;
+			} else {
+				processingState.percentage = progress.percentage || processingState.percentage;
+				processingState.status = `Processing (${processingState.sessionId}) at ${processingState.percentage}%`;
+			}
+			document.title = `${processingState.percentage}% ${
+				fileState.file?.name ? `- ${fileState.file.name} |` : ''
+			} muxr`;
+		} catch {
+			/* empty */
+		}
+		return;
+	}
+
+	clearInterval(interval);
+	if (res.status === 404) {
+		console.error('Session not found, redirecting to home.');
+		LoadingActions.hide();
+		await goto('/');
+		document.title = 'muxr';
+		return;
+	}
+
+	if (!res.ok) {
+		const message = await readErrorMessage(res, 'Separation failed.');
+		processingState.status = `Error: ${message}`;
+		await goto('/');
+		showError(message);
+		return;
+	}
+
+	const blob = await res.blob();
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = `stems_${processingState.sessionId}.zip`;
+	trackUrls.downloadZip = () => {
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+	};
+	await decompressZipBlob(blob);
+	LoadingActions.hide();
+	document.title = `${fileState.file?.name ? `${fileState.file.name} |` : ''} muxr`;
+	await goto(`/${processingState.sessionId}`);
 };
 
 async function decompressZipBlob(blob: Blob) {
